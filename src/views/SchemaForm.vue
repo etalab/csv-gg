@@ -23,8 +23,7 @@ import Vue from 'vue'
 import StringField from '@/components/StringField.vue'
 import { EventBus } from '@/event-bus.js';
 
-// TODO config
-const VALIDATA_API_URL = 'http://localhost:5600'
+const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL
 
 export default {
   name: 'schemaForm',

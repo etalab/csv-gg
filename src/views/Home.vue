@@ -18,8 +18,7 @@
 <script>
 import SchemaForm from './SchemaForm.vue'
 
-// TODO config
-const VALIDATA_API_URL = 'http://localhost:5600'
+const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL
 
 export default {
   name: 'home',
@@ -32,6 +31,7 @@ export default {
       }
   },
   mounted() {
+      // TODO make this dynamic when a new schema is chosen
       this.schemaName = this.$route.params.schema
       let loader = this.$loading.show();
       fetch(`${VALIDATA_API_URL}/schemas`).then(r => {
