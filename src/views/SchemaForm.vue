@@ -89,7 +89,8 @@ export default {
       },
       csvLink() {
           let csv = this.buildFullCsvContent();
-          let data = new Blob([csv], {type: 'text/csv'});
+          // Forcing UTF-8 encoding. See https://stackoverflow.com/questions/17879198
+          let data = new Blob(["\uFEFF" + csv], {type: 'text/csv'});
           return window.URL.createObjectURL(data);
       },
       items() {
@@ -146,7 +147,8 @@ export default {
       },
       buildFormData() {
           let formData = new FormData()
-          var blob = new Blob([this.buildCurrentCsvContent()], {type: 'text/csv'})
+          // Forcing UTF-8 encoding. See https://stackoverflow.com/questions/17879198
+          var blob = new Blob(["\uFEFF" + this.buildCurrentCsvContent()], {type: 'text/csv'})
           formData.append('file', blob, 'data.csv')
           formData.append('schema', this.schemaName)
           return formData
