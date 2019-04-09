@@ -32,7 +32,7 @@ jobs:
             - "ad:ea:1d:84:0d:44:42:49:e6:c0:f6:1a:28:74:e3:68"
       - run:
           name: Deploy docs to gh-pages branch
-          command: cd dist && gh-pages --dotfiles --message "[skip ci] Updates"
+          command: cd dist && gh-pages --dotfiles --message "[skip ci] Updates" .
 
 workflows:
   version: 2
