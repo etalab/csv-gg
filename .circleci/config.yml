@@ -20,7 +20,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: dist
+          at: .
       - run:
           name: Install and configure dependencies
           command: |
