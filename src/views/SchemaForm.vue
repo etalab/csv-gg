@@ -21,6 +21,7 @@
 <script>
 import Vue from 'vue'
 import StringField from '@/components/StringField.vue'
+import SelectField from '@/components/SelectField.vue'
 import { EventBus } from '@/event-bus.js';
 
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL
@@ -104,6 +105,9 @@ export default {
       }
   },
   methods: {
+      containsKey(obj, key) {
+        return Object.keys(obj).includes(key)
+      },
       buildForm() {
           let loader = this.$loading.show();
           fetch(this.schemaMeta.schema).then(r => {
@@ -112,7 +116,7 @@ export default {
               this.schema = data
               this.schema.fields.forEach((field) => {
                   this.fieldNames.push(field.name)
-                  this.fieldNodes.push(this.addStringField(field))
+                  this.fieldNodes.push(this.addField(field))
               })
           }).finally(() => {
               loader.hide()
@@ -159,9 +163,20 @@ export default {
           })
           this.fieldNodes = []
       },
-      addStringField(field) {
+      addField(field) {
+          const hasEnum = this.containsKey(field, "constraints") && this.containsKey(field.constraints, "enum")
+
+          if (hasEnum) {
+            const SelectFieldClass = Vue.extend(SelectField)
+            let instance = new SelectFieldClass({
+                propsData: {field: field}
+            })
+            instance.$mount()
+            return this.$refs.container.appendChild(instance.$el)
+          }
+
           const StringFieldClass = Vue.extend(StringField)
-          var instance = new StringFieldClass({
+          let instance = new StringFieldClass({
               propsData: {field: field}
           })
           instance.$mount()
