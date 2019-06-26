@@ -10,8 +10,7 @@
             valid-feedback="Ce champ est valide"
             :state="isValid"
           >
-            <b-form-radio-group
-            v-model="value" :id="`field-${field.name}`" :options="options" v-on:input="onInput" :state="isValid" />
+            <b-form-radio-group v-model="value" :id="`field-${field.name}`" :options="options" v-on:input="onInput" :state="isValid" />
         </b-form-group>
     </div>
 </template>
