@@ -41,9 +41,6 @@ export default {
             this.formValidated = false
             this.error = false
             EventBus.$emit('field-value-changed', this.field.name, event)
-        },
-        containsKey(obj, key) {
-            return Object.keys(obj).includes(key)
         }
     }
 }

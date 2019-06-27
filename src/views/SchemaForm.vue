@@ -106,9 +106,6 @@ export default {
       }
   },
   methods: {
-      containsKey(obj, key) {
-        return Object.keys(obj).includes(key)
-      },
       buildForm() {
           let loader = this.$loading.show();
           fetch(this.schemaMeta.schema).then(r => {
@@ -165,31 +162,22 @@ export default {
           this.fieldNodes = []
       },
       addField(field) {
-          const hasEnum = this.containsKey(field, "constraints") && this.containsKey(field.constraints, "enum")
+          const hasEnum = field.constraints && field.constraints.enum
           const isBoolean = field.type === "boolean"
 
-          if (hasEnum) {
-            const SelectFieldClass = Vue.extend(SelectField)
-            let instance = new SelectFieldClass({
-                propsData: {field: field}
-            })
-            instance.$mount()
-            return this.$refs.container.appendChild(instance.$el)
-          } else if (isBoolean) {
-            const RadioFieldClass = Vue.extend(RadioField)
-            let instance = new RadioFieldClass({
-                propsData: {field: field}
-            })
+          const factory = (klass, field) => {
+            const className = Vue.extend(klass)
+            let instance = new className({propsData: { field }})
             instance.$mount()
             return this.$refs.container.appendChild(instance.$el)
           }
 
-          const StringFieldClass = Vue.extend(StringField)
-          let instance = new StringFieldClass({
-              propsData: {field: field}
-          })
-          instance.$mount()
-          return this.$refs.container.appendChild(instance.$el)
+          if (hasEnum) {
+            return factory(SelectField, field)
+          } else if (isBoolean) {
+            return factory(RadioField, field)
+          }
+          return factory(StringField, field)
       },
       dispatchError(error) {
           let index = error['column-number']

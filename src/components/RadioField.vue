@@ -26,7 +26,7 @@ export default {
             { text: 'Faux', value: 'false' },
         ]
 
-        if (this.containsKey(this.field, "constraints") && this.containsKey(this.field.constraints, "required") && this.field.constraints.required) {
+        if (this.field.constraints && this.field.constraints.required) {
             return { options }
         }
 
