@@ -35,7 +35,7 @@ export default {
         type() {
             if (['number', 'float'].includes(this.field.type)) {
                 return 'number'
-            } else if (this.field.format && this.field.format === 'email') {
+            } else if (this.field.format === 'email') {
                 return 'email'
             }
 
