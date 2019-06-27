@@ -20,7 +20,7 @@
                 :max="field.constraints ? field.constraints.maximum : null"
                 v-on:input="onInput"
                 :state="isValid"
-                :trim=true
+                :trim="true"
             />
         </b-form-group>
     </div>
