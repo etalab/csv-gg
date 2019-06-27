@@ -25,15 +25,13 @@ export default {
   components: {SchemaForm},
   data() {
       return {
-          schemaName: null,
+          schemaName: this.$route.query.schema,
           schemas: null,
           options: [],
       }
   },
   mounted() {
-      // TODO make this dynamic when a new schema is chosen
-      this.schemaName = this.$route.params.schema
-      let loader = this.$loading.show();
+      let loader = this.$loading.show()
       fetch(`${VALIDATA_API_URL}/schemas`).then(r => {
           return r.json()
       }).then(data => {
@@ -55,5 +53,10 @@ export default {
           return this.schemas[this.schemaName]
       }
   },
+  watch: {
+    schemaName(newVal) {
+        this.$router.push({ query: { ...this.$route.query, schema: newVal } })
+    }
+  }
 }
 </script>
