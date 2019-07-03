@@ -50,7 +50,7 @@ export default {
   },
   watch: {
       schemaMeta() {
-          // executing every time a new schema is choosen, except the first time
+          // executed every time a new schema is choosen, except the first time
           // reset everything (what a mess!)
           this.removeFieldNodes()
           this.lines = []
@@ -62,11 +62,11 @@ export default {
           this.errors = {}
           this.faultyFields = []
           // launch a new form build
-          this.buildForm(this.schemaMeta)
+          this.buildForm()
       }
   },
   mounted() {
-      this.buildForm(this.schemaMeta)
+      this.buildForm()
       EventBus.$on('field-value-changed', (field, value) => {
           this.values[field] = value
           this.computeHasValues()
@@ -108,7 +108,7 @@ export default {
   methods: {
       buildForm() {
           let loader = this.$loading.show();
-          fetch(this.schemaMeta.schema).then(r => {
+          fetch(this.schemaMeta.schema_url).then(r => {
               return r.json()
           }).then(data => {
               this.schema = data
@@ -152,7 +152,7 @@ export default {
           // Forcing UTF-8 encoding. See https://stackoverflow.com/questions/17879198
           var blob = new Blob(["\uFEFF" + this.buildCurrentCsvContent()], {type: 'text/csv'})
           formData.append('file', blob, 'data.csv')
-          formData.append('schema', this.schemaName)
+          formData.append('schema', this.schemaMeta.schema_url)
           return formData
       },
       removeFieldNodes() {

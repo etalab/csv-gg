@@ -2,7 +2,7 @@
     <div>
         <b-form-group
           label="Choisissez un schéma à utiliser :"
-          :description="schemas && schemas[schemaName] ? schemas[schemaName].description : ''"
+          :description="schema && schema.description ? schema.description : ''"
           class="my-4"
         >
             <b-form-select v-model="schemaName" :options="options">
@@ -18,7 +18,7 @@
 <script>
 import SchemaForm from './SchemaForm.vue'
 
-const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL
+const SCHEMAS_CATALOG_URL = process.env.VUE_APP_SCHEMAS_CATALOG_URL
 
 export default {
   name: 'home',
@@ -32,15 +32,12 @@ export default {
   },
   mounted() {
       let loader = this.$loading.show()
-      fetch(`${VALIDATA_API_URL}/schemas`).then(r => {
+      fetch(`${SCHEMAS_CATALOG_URL}`).then(r => {
           return r.json()
       }).then(data => {
           this.schemas = data.schemas
-          this.options = Object.keys(this.schemas).map(schema => {
-              return {
-                  value: schema,
-                  text: this.schemas[schema].title
-              }
+          this.options = this.schemas.map(s => {
+              return {value: s.name, text: s.title || s.name}
           })
       }).finally(() => {
           loader.hide()
@@ -50,7 +47,7 @@ export default {
       schema() {
           if (!this.schemaName) return
           if (!this.schemas) return
-          return this.schemas[this.schemaName]
+          return this.schemas.find(s => s.name === this.schemaName)
       }
   },
   watch: {
