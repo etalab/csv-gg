@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve --host localhost",
     "build": "vue-cli-service build",
     "build-production": "vue-cli-service build --mode production",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "now-dev": "vue-cli-service serve  --port=$PORT"
   },
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.15",
