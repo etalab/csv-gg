@@ -34,7 +34,7 @@ jobs:
           name: Deploy docs to gh-pages branch
           command: |
             cd dist &&
-            echo forms.validata.etalab.studio > CNAME &&
+            echo csv-gg.etalab.studio > CNAME &&
             gh-pages --message "[skip ci] Updates" --dist .
 
 workflows:
