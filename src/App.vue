@@ -6,10 +6,10 @@
           <footer class="text-center">
               <hr/>
               <p class="mb-0">
-                  <strong>csv-gg</strong> est un <a href="https://github.com/etalab/csv-gg">logiciel libre</a> développé par <a href="https://etalab.gouv.fr/">Etalab</a>.
+                  <strong>csv-gg</strong> est un <a title="dépôt github" href="https://github.com/etalab/csv-gg">logiciel libre</a> développé par <a title="site d'Etalab" href="https://www.etalab.gouv.fr/">Etalab</a>.
               </p>
               <p class="mt-0">
-                  <span class="badge badge-pill badge-warning">Attention</span> il s'agit d'un projet expérimental. En cas de question ou de problème, vous pouvez <a href="https://github.com/etalab/csv-gg/issues/new">ouvrir un ticket ici</a>.
+                  <span class="badge badge-pill badge-warning">Attention</span> il s'agit d'un projet expérimental. En cas de question ou de problème, vous pouvez <a title="ouvrir un ticket" href="https://github.com/etalab/csv-gg/issues/new">ouvrir un ticket ici</a> ou nous <a title="contact mail" href="mailto:validation@data.gouv.fr?subject=A%20props%20de%20csv-gg">envoyer un email</a>.
               </p>
           </footer>
       </b-container>
