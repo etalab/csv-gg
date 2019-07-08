@@ -31,3 +31,9 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## License
+
+This repository is authored by DINSIC/Etalab.
+
+The source code is available under the [MIT License](LICENSE).
