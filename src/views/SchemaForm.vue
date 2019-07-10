@@ -215,6 +215,7 @@ export default {
               } else {
                   this.addingLine = false
                   this.lines.push(this.getCurrentLine())
+                  this.values = {}
               }
               this.dispatchNoError()
               this.dispatchFormValidated()
