@@ -20,19 +20,27 @@ import ValidateField from '@/mixins/ValidateField.vue'
 export default {
     name: 'RadioField',
     mixins: [ValidateField],
-    data() {
-        let options = [
-            { text: 'Vrai', value: 'true' },
-            { text: 'Faux', value: 'false' },
-        ]
+    computed: {
+        options: function() {
+            let options = [
+                { text: 'Vrai', value: this.trueValue },
+                { text: 'Faux', value: this.falseValue },
+            ]
 
-        if (this.field.constraints && this.field.constraints.required) {
-            return { options }
+            if (this.field.constraints && this.field.constraints.required) {
+                return options
+            }
+
+            options.push({ text: 'Non renseigné', value: '' })
+
+            return options
+        },
+        trueValue: function() {
+            return this.field.trueValues ? this.field.trueValues[0] : 'true'
+        },
+        falseValue: function() {
+            return this.field.falseValues ? this.field.falseValues[0] : 'false'
         }
-
-        options.push({text: 'Non renseigné', value: ''})
-
-        return { options }
     }
 }
 </script>
