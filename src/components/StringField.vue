@@ -22,7 +22,8 @@
                 :state="isValid"
                 :trim="true"
             />
-            <div class="mt-2" v-if="city">Ce code INSEE correspond à {{ this.city }}.</div>
+            <div class="mt-2 valid-feedback d-block" v-if="isInsee && city">Ce code INSEE correspond à {{ this.city }}.</div>
+            <div class="mt-2 invalid-feedback d-block" v-if="isInsee && !city && value">Ce code INSEE n'existe pas.</div>
         </b-form-group>
     </div>
 </template>
@@ -57,6 +58,7 @@ export default {
             }).then(data => {
                 this.city = data.nom
             })
+            .catch(_ => _)
         }
     },
     computed: {
