@@ -30,6 +30,10 @@
             <!-- SIRET -->
             <div class="mt-2 valid-feedback d-block" v-if="isSiret && siretDescription">Ce SIRET correspond à {{ this.siretDescription }}.</div>
             <div class="mt-2 invalid-feedback d-block" v-if="isSiret && !siretDescription && value">Ce code SIRET n'existe pas.</div>
+
+            <!-- Code postal -->
+            <div class="mt-2 valid-feedback d-block" v-if="isPostCode && city">Ce code postal correspond à {{ this.city }}.</div>
+            <div class="mt-2 invalid-feedback d-block" v-if="isPostCode && !city && value">Ce code code postal n'existe pas.</div>
         </b-form-group>
     </div>
 </template>
@@ -54,6 +58,8 @@ export default {
                 this.handleInseeInput(value)
             } else if (this.isSiret) {
                 this.handleSiretInput(value)
+            } else if (this.isPostCode) {
+                this.handlePostcodeInput(value)
             }
         })
     },
@@ -85,7 +91,19 @@ export default {
                 this.siretDescription = `${company.nom_raison_sociale} (${company.libelle_activite_principale})`
             })
             .catch(_ => _)
-        }
+        },
+        handlePostcodeInput: function(value) {
+            fetch(`https://geo.api.gouv.fr/communes?codePostal=${value}`).then(r => {
+                if (!r.ok) {
+                    this.city = null
+                    throw new Error("Not 200 response")
+                }
+                return r.json()
+            }).then(data => {
+                this.city = data.map(c => c.nom).join(' ou ')
+            })
+            .catch(_ => _)
+        },
     },
     computed: {
         type() {
@@ -102,6 +120,9 @@ export default {
         },
         isSiret() {
             return this.field.name.toLowerCase().includes('siret')
+        },
+        isPostCode() {
+            return ["codepostal", "code-postal", "code_postal"].includes(this.field.name.toLowerCase())
         }
     }
 }
