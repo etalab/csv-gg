@@ -93,7 +93,7 @@ export default {
             .catch(_ => _)
         },
         handlePostcodeInput: function(value) {
-            fetch(`https://geo.api.gouv.fr/communes?codePostal=${value}`).then(r => {
+            fetch(`https://geo.api.gouv.fr/communes?codePostal=${value}&boost=population`).then(r => {
                 if (!r.ok) {
                     this.city = null
                     throw new Error("Not 200 response")
