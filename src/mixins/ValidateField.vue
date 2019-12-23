@@ -1,7 +1,11 @@
 <script>
+import VueMarkdown from 'vue-markdown'
 import { EventBus } from '@/event-bus.js';
 
 export default {
+    components: {
+        VueMarkdown,
+    },
     props: {
         field: Object,
     },

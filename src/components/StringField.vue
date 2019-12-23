@@ -3,7 +3,6 @@
         <b-form-group
             label-cols-sm="4"
             label-cols-lg="3"
-            :description="field.description"
             :label="field.name"
             :label-for="`field-${field.name}`"
             :invalid-feedback="error.content"
@@ -11,6 +10,9 @@
             :state="isValid"
             :label-class="{'required': isRequired}"
           >
+            <template slot="description">
+                <vue-markdown :source="field.description" />
+            </template>
             <b-form-input
                 v-model="value"
                 :id="`field-${field.name}`"
