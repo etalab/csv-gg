@@ -35,6 +35,9 @@ export default {
             if (!this.formValidated) return null
             return !this.error
         },
+        isRequired() {
+            return this.field.constraints ? this.field.constraints.required : false
+        },
     },
     methods: {
         onInput(event) {
@@ -45,3 +48,14 @@ export default {
     }
 }
 </script>
+<style>
+label.required::before {
+    content: '✱';
+    color: #d63626;
+    padding: .2em .5em 0 0;
+    font-size: .8em;
+    position: absolute;
+    left: 0;
+    transform: translateX(-100%);
+}
+</style>

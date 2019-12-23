@@ -9,13 +9,14 @@
             :invalid-feedback="error.content"
             valid-feedback="Ce champ est valide"
             :state="isValid"
+            :label-class="{'required': isRequired}"
           >
             <b-form-input
                 v-model="value"
                 :id="`field-${field.name}`"
                 :type="type"
                 :placeholder="field.example"
-                :required="field.constraints ? field.constraints.required : false"
+                :required="isRequired"
                 :min="field.constraints ? field.constraints.minimum : null"
                 :max="field.constraints ? field.constraints.maximum : null"
                 v-on:input="onInput"

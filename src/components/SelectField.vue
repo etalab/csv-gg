@@ -9,6 +9,7 @@
             :invalid-feedback="error.content"
             valid-feedback="Ce champ est valide"
             :state="isValid"
+            :label-class="{'required': isRequired}"
           >
               <b-form-select v-model="value" :id="`field-${field.name}`" :options="options" v-on:input="onInput" :state="isValid" />
         </b-form-group>
