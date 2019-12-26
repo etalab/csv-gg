@@ -1,28 +1,18 @@
 <template>
-    <div>
-        <b-form-group
-            label-cols-sm="4"
-            label-cols-lg="3"
-            :label="field.name"
-            :label-for="`field-${field.name}`"
-            :invalid-feedback="error.content"
-            valid-feedback="Ce champ est valide"
-            :state="isValid"
-            :label-class="{'required': isRequired}"
-          >
-            <template slot="description">
-                <vue-markdown :source="field.description" />
-            </template>
-            <b-form-radio-group v-model="value" :id="`field-${field.name}`" :options="options" v-on:input="onInput" :state="isValid" />
-        </b-form-group>
-    </div>
+    <FormGroup :field=field :error=error>
+        <b-form-radio-group v-model="value" :id="`field-${field.name}`" :options="options" v-on:input="onInput" :state="isValid" />
+    </FormGroup>
 </template>
 <script>
+import FormGroup from '@/components/FormGroup.vue'
 import ValidateField from '@/mixins/ValidateField.vue'
 
 export default {
     name: 'RadioField',
     mixins: [ValidateField],
+    components: {
+        FormGroup,
+    },
     computed: {
         options: function() {
             let options = [

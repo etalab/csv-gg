@@ -1,52 +1,42 @@
 <template>
-    <div class="">
-        <b-form-group
-            label-cols-sm="4"
-            label-cols-lg="3"
-            :label="field.name"
-            :label-for="`field-${field.name}`"
-            :invalid-feedback="error.content"
-            valid-feedback="Ce champ est valide"
+    <FormGroup :field=field :error=error>
+        <b-form-input
+            v-model="value"
+            :id="`field-${field.name}`"
+            :type="type"
+            :placeholder="field.example"
+            :required="isRequired"
+            :min="field.constraints ? field.constraints.minimum : null"
+            :max="field.constraints ? field.constraints.maximum : null"
+            v-on:input="onInput"
             :state="isValid"
-            :label-class="{'required': isRequired}"
-          >
-            <template slot="description">
-                <vue-markdown :source="field.description" />
-            </template>
-            <b-form-input
-                v-model="value"
-                :id="`field-${field.name}`"
-                :type="type"
-                :placeholder="field.example"
-                :required="isRequired"
-                :min="field.constraints ? field.constraints.minimum : null"
-                :max="field.constraints ? field.constraints.maximum : null"
-                v-on:input="onInput"
-                :state="isValid"
-                :trim="true"
-            />
+            :trim="true"
+        />
 
-            <!-- INSEE -->
-            <div class="mt-2 valid-feedback d-block" v-if="isInsee && city">Ce code INSEE correspond à {{ this.city }}.</div>
-            <div class="mt-2 invalid-feedback d-block" v-if="isInsee && !city && value">Ce code INSEE n'existe pas.</div>
+        <!-- INSEE -->
+        <div class="mt-2 valid-feedback d-block" v-if="isInsee && city">Ce code INSEE correspond à {{ this.city }}.</div>
+        <div class="mt-2 invalid-feedback d-block" v-if="isInsee && !city && value">Ce code INSEE n'existe pas.</div>
 
-            <!-- SIRET -->
-            <div class="mt-2 valid-feedback d-block" v-if="isSiret && siretDescription">Ce SIRET correspond à {{ this.siretDescription }}.</div>
-            <div class="mt-2 invalid-feedback d-block" v-if="isSiret && !siretDescription && value">Ce code SIRET n'existe pas.</div>
+        <!-- SIRET -->
+        <div class="mt-2 valid-feedback d-block" v-if="isSiret && siretDescription">Ce SIRET correspond à {{ this.siretDescription }}.</div>
+        <div class="mt-2 invalid-feedback d-block" v-if="isSiret && !siretDescription && value">Ce code SIRET n'existe pas.</div>
 
-            <!-- Code postal -->
-            <div class="mt-2 valid-feedback d-block" v-if="isPostCode && city">Ce code postal correspond à {{ this.city }}.</div>
-            <div class="mt-2 invalid-feedback d-block" v-if="isPostCode && !city && value">Ce code code postal n'existe pas.</div>
-        </b-form-group>
-    </div>
+        <!-- Code postal -->
+        <div class="mt-2 valid-feedback d-block" v-if="isPostCode && city">Ce code postal correspond à {{ this.city }}.</div>
+        <div class="mt-2 invalid-feedback d-block" v-if="isPostCode && !city && value">Ce code code postal n'existe pas.</div>
+    </FormGroup>
 </template>
 <script>
 import { EventBus } from '@/event-bus.js'
 import ValidateField from '@/mixins/ValidateField.vue'
+import FormGroup from '@/components/FormGroup.vue'
 
 export default {
     name: 'StringField',
     mixins: [ValidateField],
+    components: {
+        FormGroup
+    },
     data() {
         return {
             city: null,
