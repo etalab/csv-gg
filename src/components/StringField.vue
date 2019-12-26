@@ -21,6 +21,10 @@
         <div class="mt-2 valid-feedback d-block" v-if="isSiret && siretDescription">Ce SIRET correspond à {{ this.siretDescription }}.</div>
         <div class="mt-2 invalid-feedback d-block" v-if="isSiret && !siretDescription && value">Ce code SIRET n'existe pas.</div>
 
+        <!-- SIREN -->
+        <div class="mt-2 valid-feedback d-block" v-if="isSiren && sirenDescription">Ce SIREN correspond à {{ this.sirenDescription }}.</div>
+        <div class="mt-2 invalid-feedback d-block" v-if="isSiren && !sirenDescription && value">Ce code SIREN n'existe pas.</div>
+
         <!-- Code postal -->
         <div class="mt-2 valid-feedback d-block" v-if="isPostCode && city">Ce code postal correspond à {{ this.city }}.</div>
         <div class="mt-2 invalid-feedback d-block" v-if="isPostCode && !city && value">Ce code code postal n'existe pas.</div>
@@ -40,7 +44,8 @@ export default {
     data() {
         return {
             city: null,
-            siretDescription: null
+            siretDescription: null,
+            sirenDescription: null,
         }
     },
     mounted() {
@@ -51,6 +56,8 @@ export default {
                 this.handleInseeInput(value)
             } else if (this.isSiret) {
                 this.handleSiretInput(value)
+            } else if (this.isSiren) {
+                this.handleSirenInput(value)
             } else if (this.isPostCode) {
                 this.handlePostcodeInput(value)
             }
@@ -85,6 +92,21 @@ export default {
             })
             .catch(_ => _)
         },
+        handleSirenInput: function(value) {
+            this.sirenDescription = null
+            if (value.length !== 9) return
+
+            fetch(`https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${value}`).then(r => {
+                if (!r.ok) {
+                    this.sirenDescription = null
+                    throw new Error("Not 200 response")
+                }
+                return r.json()
+            }).then(data => {
+                this.sirenDescription = data.unite_legale.denomination
+            })
+            .catch(_ => _)
+        },
         handlePostcodeInput: function(value) {
             fetch(`https://geo.api.gouv.fr/communes?codePostal=${value}&boost=population`).then(r => {
                 if (!r.ok) {
@@ -113,6 +135,11 @@ export default {
         },
         isSiret() {
             return this.field.name.toLowerCase().includes('siret')
+        },
+        isSiren() {
+            const name = this.field.name.toLowerCase()
+            const description = (this.field.description || "").toLowerCase()
+            return name.includes('siren') || new RegExp('\\bsiren\\b').test(description)
         },
         isPostCode() {
             return ["codepostal", "code-postal", "code_postal"].includes(this.field.name.toLowerCase())
