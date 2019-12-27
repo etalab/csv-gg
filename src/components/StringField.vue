@@ -122,7 +122,7 @@ export default {
             const name = this.field.name.toLowerCase()
             const description = (this.field.description || "").toLowerCase()
             return name.includes(keyword) || new RegExp(`\\b${keyword}\\b`).test(description)
-        }
+        },
     },
     computed: {
         type() {
