@@ -64,7 +64,7 @@ export default {
         })
     },
     methods: {
-        handleInseeInput: function(value) {
+        handleInseeInput(value) {
             fetch(`https://geo.api.gouv.fr/communes/${value}`).then(r => {
                 if (!r.ok) {
                     this.city = null
@@ -76,23 +76,22 @@ export default {
             })
             .catch(_ => _)
         },
-        handleSiretInput: function(value) {
+        handleSiretInput(value) {
             this.siretDescription = null
             if (value.length !== 14) return
 
-            fetch(`https://entreprise.data.gouv.fr/api/sirene/v1/siret/${value}`).then(r => {
+            fetch(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${value}`).then(r => {
                 if (!r.ok) {
                     this.siretDescription = null
                     throw new Error("Not 200 response")
                 }
                 return r.json()
             }).then(data => {
-                const company = data.etablissement
-                this.siretDescription = `${company.nom_raison_sociale} (${company.libelle_activite_principale})`
+                this.siretDescription = data.etablissement.unite_legale.denomination
             })
             .catch(_ => _)
         },
-        handleSirenInput: function(value) {
+        handleSirenInput(value) {
             this.sirenDescription = null
             if (value.length !== 9) return
 
@@ -107,7 +106,7 @@ export default {
             })
             .catch(_ => _)
         },
-        handlePostcodeInput: function(value) {
+        handlePostcodeInput(value) {
             fetch(`https://geo.api.gouv.fr/communes?codePostal=${value}&boost=population`).then(r => {
                 if (!r.ok) {
                     this.city = null
@@ -118,6 +117,11 @@ export default {
                 this.city = data.map(c => c.nom).join(' ou ')
             })
             .catch(_ => _)
+        },
+        fieldHasKeyword(keyword) {
+            const name = this.field.name.toLowerCase()
+            const description = (this.field.description || "").toLowerCase()
+            return name.includes(keyword) || new RegExp(`\\b${keyword}\\b`).test(description)
         },
     },
     computed: {
@@ -134,12 +138,10 @@ export default {
             return this.field.name.toLowerCase().includes('insee')
         },
         isSiret() {
-            return this.field.name.toLowerCase().includes('siret')
+            return this.fieldHasKeyword('siret')
         },
         isSiren() {
-            const name = this.field.name.toLowerCase()
-            const description = (this.field.description || "").toLowerCase()
-            return name.includes('siren') || new RegExp('\\bsiren\\b').test(description)
+            return this.fieldHasKeyword('siren')
         },
         isPostCode() {
             return ["codepostal", "code-postal", "code_postal"].includes(this.field.name.toLowerCase())
