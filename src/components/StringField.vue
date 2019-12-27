@@ -64,7 +64,7 @@ export default {
         })
     },
     methods: {
-        handleInseeInput: function(value) {
+        handleInseeInput(value) {
             fetch(`https://geo.api.gouv.fr/communes/${value}`).then(r => {
                 if (!r.ok) {
                     this.city = null
@@ -76,7 +76,7 @@ export default {
             })
             .catch(_ => _)
         },
-        handleSiretInput: function(value) {
+        handleSiretInput(value) {
             this.siretDescription = null
             if (value.length !== 14) return
 
@@ -91,7 +91,7 @@ export default {
             })
             .catch(_ => _)
         },
-        handleSirenInput: function(value) {
+        handleSirenInput(value) {
             this.sirenDescription = null
             if (value.length !== 9) return
 
@@ -106,7 +106,7 @@ export default {
             })
             .catch(_ => _)
         },
-        handlePostcodeInput: function(value) {
+        handlePostcodeInput(value) {
             fetch(`https://geo.api.gouv.fr/communes?codePostal=${value}&boost=population`).then(r => {
                 if (!r.ok) {
                     this.city = null
@@ -118,7 +118,7 @@ export default {
             })
             .catch(_ => _)
         },
-        fieldHasKeyword: function(keyword) {
+        fieldHasKeyword(keyword) {
             const name = this.field.name.toLowerCase()
             const description = (this.field.description || "").toLowerCase()
             return name.includes(keyword) || new RegExp(`\\b${keyword}\\b`).test(description)
