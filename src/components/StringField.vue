@@ -80,15 +80,14 @@ export default {
             this.siretDescription = null
             if (value.length !== 14) return
 
-            fetch(`https://entreprise.data.gouv.fr/api/sirene/v1/siret/${value}`).then(r => {
+            fetch(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${value}`).then(r => {
                 if (!r.ok) {
                     this.siretDescription = null
                     throw new Error("Not 200 response")
                 }
                 return r.json()
             }).then(data => {
-                const company = data.etablissement
-                this.siretDescription = `${company.nom_raison_sociale} (${company.libelle_activite_principale})`
+                this.siretDescription = data.etablissement.unite_legale.denomination
             })
             .catch(_ => _)
         },
@@ -119,6 +118,11 @@ export default {
             })
             .catch(_ => _)
         },
+        fieldHasKeyword: function(keyword) {
+            const name = this.field.name.toLowerCase()
+            const description = (this.field.description || "").toLowerCase()
+            return name.includes(keyword) || new RegExp(`\\b${keyword}\\b`).test(description)
+        }
     },
     computed: {
         type() {
@@ -134,12 +138,10 @@ export default {
             return this.field.name.toLowerCase().includes('insee')
         },
         isSiret() {
-            return this.field.name.toLowerCase().includes('siret')
+            return this.fieldHasKeyword('siret')
         },
         isSiren() {
-            const name = this.field.name.toLowerCase()
-            const description = (this.field.description || "").toLowerCase()
-            return name.includes('siren') || new RegExp('\\bsiren\\b').test(description)
+            return this.fieldHasKeyword('siren')
         },
         isPostCode() {
             return ["codepostal", "code-postal", "code_postal"].includes(this.field.name.toLowerCase())
