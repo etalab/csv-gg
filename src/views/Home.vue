@@ -22,6 +22,9 @@
                 </template>
             </b-form-select>
         </b-form-group>
+        <b-alert v-if="schema.name === 'etalab/schema-lieux-covoiturage'" show dismissible>
+            <div>Pour toute question, n'hésitez pas à adresser un mail à <a href="mailto:contact@transport.beta.gouv.fr">contact@transport.beta.gouv.fr</a></div>
+        </b-alert>
         <schema-form v-if="schema" :schema-meta="schema" :schema-name="schemaName"></schema-form>
     </div>
 </template>
