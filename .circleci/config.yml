@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: node:8.10.0
+      - image: node:12
     steps:
       - checkout
       - run:
@@ -16,7 +16,7 @@ jobs:
           paths: dist
   deploy:
     docker:
-      - image: node:8.10.0
+      - image: node:12
     steps:
       - checkout
       - attach_workspace:
