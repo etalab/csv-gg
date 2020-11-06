@@ -9,7 +9,7 @@
                 <li>L'outil vous prévient d'éventuelles erreurs de validation, le cas échéant vous pouvez les corriger.</li>
                 <li>Une fois votre formulaire valide, les valeurs apparaissent sous la forme d'une ligne dans un tableau récapitulatif.</li>
                 <li>Vous pouvez alors choisir d'ajouter une ou plusieurs lignes (répétez les étapes 2 à 4) ou télécharger le fichier CSV correspondant au tableau récapitulatif.</li>
-                <li v-if="schema && schema.name === 'etalab/schema-lieux-covoiturage'">Une fois votre fichier complété et téléchargé, vous pouvez l'envoyer à <a href="mailto:contact@transport.beta.gouv.fr">contact@transport.beta.gouv.fr</a></li>
+                <li v-if="schema && schema.name === 'etalab/schema-lieux-covoiturage'">Une fois votre fichier complété et téléchargé, vous pouvez l'envoyer à <a href="mailto:contact@transport.beta.gouv.fr">contact@transport.beta.gouv.fr</a> pour qu'il soit intégré à la base nationale.</li>
             </ol>
         </b-alert>
         <b-form-group
