@@ -26,24 +26,99 @@
         <b-alert v-if="schema && schema.name === 'etalab/schema-lieux-covoiturage'" show dismissible>
             <div>Pour toute question, n'hésitez pas à adresser un mail à <a href="mailto:contact@transport.beta.gouv.fr">contact@transport.beta.gouv.fr</a></div>
         </b-alert>
-        <schema-form v-if="schema" :schema-meta="schema" :schema-name="schemaName"></schema-form>
+
+<!---
+        <div v-if="schema" id="gridview">
+            <vue-editable-grid
+            class="grid"
+            ref="grid"
+            id="mygrid"
+            :column-defs="columnDefs"
+            :row-data="rows"
+            row-data-key='id'
+            @cell-updated="cellUpdated"
+            @row-selected="rowSelected"
+            @link-clicked="linkClicked"
+            @context-menu="contextMenu"
+            >
+            <template v-slot:header>
+                Vue editable grid, by eledwinn
+                <a href="#" @click.prevent="removeCurrentRow" v-if="selectedRow" class="ml-1">Remove current row</a>
+            </template>
+            <template v-slot:header-r>
+                Total rows: {{ rows.length }}
+            </template>
+            </vue-editable-grid>
+        </div>
+-->
+        <schema-table v-if="schema" :schema-meta="schema" :schema-name="schemaName"></schema-table>
+
+ <!---       <schema-form v-if="schema" :schema-meta="schema" :schema-name="schemaName"></schema-form> -->
+
+
     </div>
 </template>
 
 <script>
 import SchemaForm from './SchemaForm.vue'
+import SchemaTable from './SchemaTable.vue'
+
+import VueEditableGrid from '../grid/VueEditableGrid.vue'
+
+import data from '../data'
+
 
 const SCHEMAS_CATALOG_URL = process.env.VUE_APP_SCHEMAS_CATALOG_URL
 
+
+export const defaultDateFormat = 'MMM dd, yyyy'
+export const defaultDateTimeFormat = 'MMM dd, yyyy h:mm a'
+
+const numericFormatter = event => {
+  if (event.reverse) {
+    return event.value && +event.value.replace(' years')
+  }
+  return `${event.value} years`
+}
+
+const columnDefinition = [
+  { sortable: true, filter: true, field: 'id', headerName: 'Id', editable: true },
+  { sortable: true, filter: true, field: 'eyeColor', headerName: 'Eye color', editable: true },
+  { sortable: true, filter: true, field: 'name', headerName: 'Name', editable: true },
+  { sortable: true, filter: true, field: 'gender', headerName: 'gender', editable: true },
+  { sortable: true, filter: true, field: 'company', headerName: 'Company', editable: true },
+  { sortable: true, filter: true, field: 'email', headerName: 'Email', editable: true },
+  { sortable: true, filter: true, field: 'Phone', headerName: 'Phone', editable: true },
+  { sortable: true, filter: true, field: 'registered', headerName: 'registered', type: 'datetime', format: defaultDateTimeFormat, editable: true },
+  { sortable: true, filter: true, field: 'registered', headerName: 'registered', type: 'date', format: defaultDateTimeFormat, editable: true },
+  { sortable: true, filter: true, field: 'age', headerName: 'Age', type: 'numeric', editable: true },
+  { sortable: true, filter: true, field: 'age', headerName: 'Age Formatted', type: 'numeric', editable: true, formatter: numericFormatter },
+  { sortable: true, filter: true, field: 'balance', headerName: 'Balance', type: 'currency', editable: true },
+  { sortable: true, filter: true, field: 'happiness', headerName: 'Happiness percent', type: 'percent', editable: true },
+  { sortable: true, filter: true, field: 'isActive', headerName: 'Is active', type: 'boolean', editable: true },
+  { sortable: true, filter: false, field: 'picture', headerName: 'Picture', type: 'link', editable: false }
+]
+
+
 export default {
   name: 'home',
-  components: {SchemaForm},
+  components: {
+      SchemaForm,
+      SchemaTable,
+      VueEditableGrid
+  },
   data() {
       return {
           schemaName: this.$route.query.schema,
           schemas: null,
           options: [],
+          columnDefs: columnDefinition,
+          rows: [],
+          selectedRow: null
       }
+  },
+  created () {
+    this.formatData()
   },
   mounted() {
       let loader = this.$loading.show()
@@ -69,6 +144,70 @@ export default {
     schemaName(newVal) {
         this.$router.push({ query: { ...this.$route.query, schema: newVal } })
     }
+  },
+  methods: {
+    formatData () {
+      data.forEach(row => {
+        this.formatRow(row)
+      })
+      this.rows = data
+    },
+    formatRow (row) {
+      const red = '#ffe5e5'
+      const green = '#b6f7b6'
+      const { happiness } = row
+      const priceRateBgColor = happiness > 0.6 ? green : red
+      row.$cellStyle = {
+        happiness: priceRateBgColor && { backgroundColor: priceRateBgColor }
+      }
+      if (row.eyeColor === 'blue') {
+        row.$rowStyle = { color: 'blue' }
+      }
+    },
+    cellUpdated ($event) {
+      console.log('ooo');
+      console.log($event)
+    },
+    rowSelected ($event) {
+      console.log($event.rowData);
+      this.selectedRow = $event.rowData
+    },
+    linkClicked ($event) {
+      console.log("ff");
+      console.log($event)
+    },
+    removeCurrentRow () {
+      this.rows = this.rows.filter(row => row.id !== this.selectedRow.id)
+    },
+    contextMenu ($event) {
+      console.log($event)
+    }
   }
 }
+
+
+
+
+
+
 </script>
+
+<style lang="scss">
+#gridview {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  font-size: 14px;
+  height: 400px;
+}
+
+.grid {
+  height: 100%;
+}
+
+.ml-1 {
+  margin-left: 10px;
+}
+</style>
