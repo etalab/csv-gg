@@ -23,6 +23,7 @@ import Vue from 'vue'
 import StringField from '@/components/StringField.vue'
 import SelectField from '@/components/SelectField.vue'
 import RadioField from '@/components/RadioField.vue'
+import GeoPointField from '@/components/GeoPointField.vue'
 import { EventBus } from '@/event-bus.js';
 
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL
@@ -164,6 +165,7 @@ export default {
       addField(field) {
           const hasEnum = field.constraints && field.constraints.enum
           const isBoolean = field.type === "boolean"
+          const isGeoPoint = field.type === "geopoint"
 
           const factory = (klass, field) => {
             const className = Vue.extend(klass)
@@ -176,6 +178,8 @@ export default {
             return factory(SelectField, field)
           } else if (isBoolean) {
             return factory(RadioField, field)
+          } else if (isGeoPoint) {
+            return factory(GeoPointField, field)
           }
           return factory(StringField, field)
       },
