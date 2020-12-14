@@ -1,16 +1,26 @@
 <template>
   <FormGroup :field="field" :error="error">
-    <!-- <b-form-input
-      v-model="value"
-      :id="`field-${field.name}`"
-      type="text"
-      :placeholder="field.example"
-      :required="isRequired"
-      v-on:input="onInput"
-      :state="isValid"
-    /> -->
-    <div id="my_map">
-      <l-map ref="myMap"></l-map>
+    <div>
+      <l-map
+        :center="center"
+        :zoom="zoom"
+        style="height: 300px; width: 100%"
+        >
+        <l-tile-layer
+          :url="url"
+          :attribution="attribution"
+        />
+        <l-marker
+          :lat-lng="markerLocation"
+          :draggable="true"
+          @update:latLng="updateLocation"
+          >
+          <l-tooltip>
+            Déplacez le marqueur<br/>
+            pour sélectionner l'emplacement
+          </l-tooltip>
+        </l-marker>
+      </l-map>
     </div>
   </FormGroup>
 </template>
@@ -18,58 +28,40 @@
 <script>
 import FormGroup from '@/components/FormGroup.vue'
 import ValidateField from '@/mixins/ValidateField.vue'
-import L from 'leaflet'
-
-
-function initMap(map) {
-  // Initial settings
-  const coords = [46, 2]
-  const zoomLevel = 12
-
-  map.setView(coords, zoomLevel)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-
-  let marker = L.marker(coords, {
-    draggable: true
-  }).addTo(map)
-    .bindPopup('Choisir<br/>un point géographique')
-    .openPopup();
-
-  marker.on('dragstart', function(e) {
-    marker.closePopup()
-  })
-  marker.on('dragend', function(e) {
-    const lon = marker.getLatLng().lng
-    const lat = marker.getLatLng().lat
-    marker.bindPopup(`${lon.toFixed(2)}, ${lat.toFixed(2)}`)
-    marker.openPopup()
-  })
-
-}
+import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
+import { EventBus } from '@/event-bus.js';
 
 export default {
   name: 'GeoPointField',
   mixins: [ValidateField],
   components: {
-    FormGroup
+    FormGroup,
+    LMap,
+    LTileLayer,
+    LMarker,
+    LTooltip
+  },
+  methods: {
+    updateLocation(center) {
+      this.markerLocation = center
+      // as an array
+      //const value = [center.lng, center.lat]
+      // as a string
+      const value = center.lng + ", " + center.lat
+      // as an object (doesn't work)
+      //const value = { lon: center.lng, lat: center.lat }
+      EventBus.$emit('field-value-changed', this.field.name, value)
+    }
   },
   data() {
     return {
-      lon: null,
-      lat: null,
+      center: [46, 2],
+      zoom: 12,
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      markerLocation: [46, 2],
+      values: [[46, 2]]
     }
-  },
-  mounted() {
-      const map = this.$refs.myMap.mapObject
-      initMap(map)
   },
 }
 </script>
-
-<style>
-  #my_map {
-    height: 300px;
-  }
-</style>

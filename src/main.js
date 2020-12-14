@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import BootstrapVue from 'bootstrap-vue'
 import Loading from 'vue-loading-overlay'
-import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
+import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet';
 import { Icon } from 'leaflet';
 
 import 'vue-loading-overlay/dist/vue-loading.css'
@@ -26,6 +26,7 @@ Vue.use(Loading)
 Vue.component('l-map', LMap);
 Vue.component('l-tile-layer', LTileLayer);
 Vue.component('l-marker', LMarker);
+Vue.component('l-tooltip', LTooltip);
 
 new Vue({
   router,
