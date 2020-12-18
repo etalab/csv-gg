@@ -47,7 +47,9 @@ export default {
       // as an array
       //const value = [center.lng, center.lat]
       // as a string
-      const value = center.lng + ", " + center.lat
+      // const value = center.lng + ", " + center.lat
+      const fp = this.floatPrecision
+      const value = `${center.lng.toFixed(fp)}, ${center.lat.toFixed(fp)}`
       // as an object (doesn't work)
       //const value = { lon: center.lng, lat: center.lat }
       EventBus.$emit('field-value-changed', this.field.name, value)
@@ -60,7 +62,8 @@ export default {
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       markerLocation: [46, 2],
-      values: [[46, 2]]
+      values: [[46, 2]],
+      floatPrecision: 3
     }
   },
 }
