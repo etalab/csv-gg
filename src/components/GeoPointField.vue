@@ -124,7 +124,7 @@ export default {
       zoom: 5,
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      markerLocation: [46, 2],
+      markerLocation: [46.8, 2.11],
       value: '',
       floatPrecision: 2,
       showMap: false,
