@@ -1,17 +1,5 @@
 <template>
   <FormGroup :field="field" :error="error">
-    <!-- <b-form-input
-            v-model="value"
-            :id="`field-${field.name}`"
-            :type="type"
-            :placeholder="field.example"
-            :required="isRequired"
-            :min="field.constraints ? field.constraints.minimum : null"
-            :max="field.constraints ? field.constraints.maximum : null"
-            v-on:input="onInput"
-            :state="isValid"
-            :trim="true"
-        /> -->
     <div style="display: grid; grid-template-columns: auto 60px;">
       <b-form-input
         v-model="value"
@@ -70,23 +58,48 @@ export default {
   },
   methods: {
     onBlur() {
-      this.onInput(this.value)
-    },
-    onInput(strValue) {
+      // Called after the user changed text input value
+      const strValue = this.value
       const latLng = this.extractLatLng(strValue)
       const valid = strValue == '' || latLng !== false
       EventBus.$emit('field-error', this.field.name, !valid)
       EventBus.$emit('field-value-changed', this.field.name, strValue)
 
+      // Update marker on map if coords are ok
       if (latLng !== false) {
         this.recenterMap(latLng)
       }
     },
+    // Called after marker has been moved
+    // either dragging it or setting its location
+    onMarkerMove(latLng) {
+
+      // marker location
+      this.markerLocation = latLng
+
+      // formatted value: "lon, lat"
+      const value = this.formatLatLng(latLng)
+
+      // update text input
+      this.value = value
+
+      // Hey! value has changed
+      EventBus.$emit('field-value-changed', this.field.name, value)
+    },
+    // Recenter map and marker on a location
+    // called after coords have been changed in text input
+    recenterMap(latLng) {
+      this.markerLocation = latLng
+      this.center = latLng
+    },
+    // Format longLat object to string
     formatLatLng(lngLat) {
       const fp = this.floatPrecision
       const { lat, lng } = lngLat
       return `${lng.toFixed(fp)}, ${lat.toFixed(fp)}`
     },
+    // Extract latLng object from string
+    // return false if an error occurred
     extractLatLng(str) {
       if (str == '') {
         return false
@@ -104,28 +117,10 @@ export default {
       // TODO: check lon and lat bounds
       return { lon, lat }
     },
-    onMarkerMove(latLng) {
-
-      // marker location
-      this.markerLocation = latLng
-
-      // formatted value: "lon, lat"
-      const value = this.formatLatLng(latLng)
-
-      // update text input
-      this.value = value
-
-      // Hey! value has changed
-      EventBus.$emit('field-value-changed', this.field.name, value)
-    },
-    recenterMap(latLng) {
-      this.markerLocation = latLng
-      this.center = latLng
-    }
   },
   data() {
     return {
-      center: [46.8, 2.11],
+      center: [46.8, 2.11], // center of France, cocorico!
       zoom: 5,
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
