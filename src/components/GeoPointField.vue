@@ -1,7 +1,26 @@
 <template>
   <FormGroup :field="field" :error="error">
+    <!-- <b-form-input
+            v-model="value"
+            :id="`field-${field.name}`"
+            :type="type"
+            :placeholder="field.example"
+            :required="isRequired"
+            :min="field.constraints ? field.constraints.minimum : null"
+            :max="field.constraints ? field.constraints.maximum : null"
+            v-on:input="onInput"
+            :state="isValid"
+            :trim="true"
+        /> -->
+    <div style="display: grid; grid-template-columns: auto 60px;">
+      <b-form-input />
+      <button @click="showMap = !showMap">
+          GEO
+      </button>
+    </div>
     <div>
       <l-map
+        v-if="showMap"
         :center="center"
         :zoom="zoom"
         style="height: 300px; width: 100%"
@@ -44,15 +63,13 @@ export default {
   methods: {
     updateLocation(center) {
       this.markerLocation = center
-      // as an array
-      //const value = [center.lng, center.lat]
-      // as a string
-      // const value = center.lng + ", " + center.lat
+
       const fp = this.floatPrecision
       const value = `${center.lng.toFixed(fp)}, ${center.lat.toFixed(fp)}`
-      // as an object (doesn't work)
-      //const value = { lon: center.lng, lat: center.lat }
       EventBus.$emit('field-value-changed', this.field.name, value)
+    },
+    limitPrecision(floatVal) {
+      return floatVal.toFixed(this.floatPrecision)
     }
   },
   data() {
@@ -63,7 +80,8 @@ export default {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       markerLocation: [46, 2],
       values: [[46, 2]],
-      floatPrecision: 3
+      floatPrecision: 3,
+      showMap: false,
     }
   },
 }
