@@ -14,7 +14,7 @@
         /> -->
     <div style="display: grid; grid-template-columns: auto 60px;">
       <b-form-input />
-      <button @click="showMap = !showMap">
+      <button @click.prevent="showMap = !showMap">
           GEO
       </button>
     </div>
