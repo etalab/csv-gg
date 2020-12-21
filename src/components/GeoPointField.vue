@@ -4,7 +4,7 @@
       <b-form-input
         v-model="value"
         :id="`field-${field.name}`"
-        :placeholder="field.example"
+        :placeholder="placeHolder"
         :required="isRequired"
         v-on:blur="onBlur"
         :state="isValid"
@@ -130,5 +130,10 @@ export default {
       showMap: false,
     }
   },
+  computed: {
+    placeHolder() {
+      return this.field.example || "longitude, latitude"
+    }
+  }
 }
 </script>
