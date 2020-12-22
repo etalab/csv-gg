@@ -49,6 +49,10 @@ import ValidateField from '@/mixins/ValidateField.vue'
 import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
 import { EventBus } from '@/event-bus.js';
 
+// Initial settings
+const GEO_WIDGET_INITIAL_CENTER = [46.8, 2.11] // Center of France
+const GEO_DECIMAL_COUNT = 2
+
 export default {
   name: 'GeoPointField',
   mixins: [ValidateField],
@@ -122,13 +126,13 @@ export default {
   },
   data() {
     return {
-      center: [46.8, 2.11], // center of France, cocorico!
+      center: GEO_WIDGET_INITIAL_CENTER,
+      markerLocation: GEO_WIDGET_INITIAL_CENTER,
       zoom: 5,
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      markerLocation: [46.8, 2.11],
       value: '',
-      floatPrecision: 2,
+      floatPrecision: GEO_DECIMAL_COUNT,
       showMap: false,
     }
   },
@@ -143,6 +147,8 @@ export default {
   mounted() {
     // reset map on new form line
     EventBus.$on('form-reset', () => {
+        this.center = GEO_WIDGET_INITIAL_CENTER
+        this.markerLocation = GEO_WIDGET_INITIAL_CENTER
         this.showMap = false
         this.value = ''
     })
