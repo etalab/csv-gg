@@ -1,6 +1,6 @@
 <template>
   <FormGroup :field="field" :error="error">
-    <div style="display: grid; grid-template-columns: auto 60px;">
+    <b-input-group>
       <b-form-input
         v-model="value"
         :id="`field-${field.name}`"
@@ -10,13 +10,14 @@
         :state="isValid"
         :trim="true"
       />
-      <button v-on:click.prevent="showMap = !showMap">
-          GEO
-      </button>
-    </div>
-    <div>
+      <b-input-group-append>
+        <b-button variant="info" size="sm" v-b-toggle="`${field.name}-collapse`">
+            GEO
+        </b-button>
+      </b-input-group-append>
+    </b-input-group>
+    <b-collapse :id="`${field.name}-collapse`">
       <l-map
-        v-if="showMap"
         :center="center"
         :zoom="zoom"
         style="height: 300px; width: 100%"
@@ -36,7 +37,7 @@
           </l-tooltip>
         </l-marker>
       </l-map>
-    </div>
+    </b-collapse>
   </FormGroup>
 </template>
 
