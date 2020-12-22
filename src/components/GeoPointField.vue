@@ -11,13 +11,14 @@
         :trim="true"
       />
       <b-input-group-append>
-        <b-button variant="info" size="sm" v-b-toggle="`${field.name}-collapse`">
-            GEO
+        <b-button variant="info" v-b-toggle="`${field.name}-collapse`" :title="mapTooltip">
+            carte
         </b-button>
       </b-input-group-append>
     </b-input-group>
-    <b-collapse :id="`${field.name}-collapse`">
+    <b-collapse :id="`${field.name}-collapse`" v-model="showMap">
       <l-map
+        v-if="showMap"
         :center="center"
         :zoom="zoom"
         style="height: 300px; width: 100%"
@@ -134,6 +135,9 @@ export default {
   computed: {
     placeHolder() {
       return this.field.example || "longitude,latitude"
+    },
+    mapTooltip() {
+      return this.showMap ? "ouvrir la carte" : "fermer la carte"
     }
   }
 }
