@@ -137,7 +137,7 @@ export default {
       return this.field.example || "longitude,latitude"
     },
     mapTooltip() {
-      return this.showMap ? "ouvrir la carte" : "fermer la carte"
+      return this.showMap ? "cacher la carte" : "afficher la carte"
     }
   },
   mounted() {
