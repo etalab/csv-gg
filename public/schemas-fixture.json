@@ -5,7 +5,7 @@
         {
             "name": "schema-geopoint-fixture",
             "title": "Schema fixture with geopoint",
-            "schema_url": "http://csvgg.loca.lt/schema-geopoint-fixture.json"
+            "schema_url": "http://localhost:8081/schema-geopoint-fixture.json"
         }
     ]
 }
