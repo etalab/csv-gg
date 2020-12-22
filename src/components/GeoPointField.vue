@@ -139,6 +139,13 @@ export default {
     mapTooltip() {
       return this.showMap ? "ouvrir la carte" : "fermer la carte"
     }
+  },
+  mounted() {
+    // reset map on new form line
+    EventBus.$on('form-reset', () => {
+        this.showMap = false
+        this.value = ''
+    })
   }
 }
 </script>
