@@ -6,7 +6,7 @@
         :id="`field-${field.name}`"
         :placeholder="placeHolder"
         :required="isRequired"
-        v-on:blur="onBlur"
+        v-on:change="onChange"
         :state="isValid"
         :trim="true"
       />
@@ -57,9 +57,8 @@ export default {
     LTooltip
   },
   methods: {
-    onBlur() {
+    onChange(strValue) {
       // Called after the user changed text input value
-      const strValue = this.value
       const latLng = this.extractLatLng(strValue)
       const valid = strValue == '' || latLng !== false
       EventBus.$emit('field-error', this.field.name, !valid)
