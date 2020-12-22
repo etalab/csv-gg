@@ -96,7 +96,7 @@ export default {
     formatLatLng(lngLat) {
       const fp = this.floatPrecision
       const { lat, lng } = lngLat
-      return `${lng.toFixed(fp)}, ${lat.toFixed(fp)}`
+      return `${lng.toFixed(fp)},${lat.toFixed(fp)}`
     },
     // Extract latLng object from string
     // return false if an error occurred
@@ -132,7 +132,7 @@ export default {
   },
   computed: {
     placeHolder() {
-      return this.field.example || "longitude, latitude"
+      return this.field.example || "longitude,latitude"
     }
   }
 }
