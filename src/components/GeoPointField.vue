@@ -32,8 +32,9 @@
           @update:latLng="onMarkerMove"
           >
           <l-tooltip>
-            Déplacez le marqueur<br/>
-            pour sélectionner l'emplacement
+            Déplacez moi<br/>
+            pour mettre à jour<br/>
+            les coordonnées
           </l-tooltip>
         </l-marker>
       </l-map>
