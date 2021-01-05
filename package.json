@@ -16,7 +16,8 @@
     "vue": "^2.6.6",
     "vue-loading-overlay": "^3.2.0",
     "vue-markdown": "^2.2.4",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vue-simple-suggest": "^1.10.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.12.0",
