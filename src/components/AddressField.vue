@@ -27,6 +27,7 @@ import { EventBus } from '@/event-bus.js'
 import ValidateField from '@/mixins/ValidateField.vue'
 import FormGroup from '@/components/FormGroup.vue'
 import VueSimpleSuggest from 'vue-simple-suggest'
+import queryString from 'query-string'
 
 export default {
     name: 'AddressField',
@@ -44,7 +45,12 @@ export default {
         // Function returning a promise as a factory for suggestion lists.
         getSuggestionList(inputValue) {
             return new Promise((resolve, reject) => {
-                let url = `https://api-adresse.data.gouv.fr/search/?q=${inputValue}`
+                let url = queryString.stringifyUrl({
+                    url: 'https://api-adresse.data.gouv.fr/search/',
+                    query: {
+                        q: inputValue
+                    }
+                })
                 fetch(url).then(response => {
                     if (!response.ok) {
                         reject()
