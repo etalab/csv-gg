@@ -1,0 +1,11 @@
+{
+    "$schema": "https://opendataschema.frama.io/catalog/schema-catalog.json",
+    "version": 1,
+    "schemas": [
+        {
+            "name": "schema-address-fixture",
+            "title": "Schema fixture with address",
+            "schema_url": "http://csvgg.loca.lt/schema-address-fixture.json"
+        }
+    ]
+}
