@@ -162,10 +162,14 @@ export default {
           })
           this.fieldNodes = []
       },
+      isAddressField(field) {
+        const patterns = ["ad_", "addr_", "address", "adr_", "adresse"];
+        const lowerFieldName = field.name.toLowerCase();
+        return patterns.some((elt) => lowerFieldName.includes(elt));
+      },
       addField(field) {
           const hasEnum = field.constraints && field.constraints.enum
           const isBoolean = field.type === "boolean"
-          const isAddress = field.name.includes("adresse")
 
           const factory = (klass, field) => {
             const className = Vue.extend(klass)
@@ -178,7 +182,7 @@ export default {
             return factory(SelectField, field)
           } else if (isBoolean) {
             return factory(RadioField, field)
-          } else if (isAddress) {
+          } else if (isAddressField(field)) {
             return factory(AddressField, field)
           }
           return factory(StringField, field)
