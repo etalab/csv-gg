@@ -1,5 +1,5 @@
 import axios from 'axios'
-import store from '../store'
+import store from '@/store'
 
 const instance = axios.create()
 
@@ -24,14 +24,14 @@ instance.interceptors.response.use(response => {
   return response
 })
 
-function defaultErrorCallback (res) {
-  console.error('API error', res)
+// function defaultErrorCallback (res) {
+  //console.error('API error', res)
+function defaultErrorCallback () {
 }
 
 export default class Api {
   constructor () {
-    this.API_BASE_URL = process.env.GRIDSOME_BASE_URL
-    this.UPLOADER_BASE_URL = 'http://localhost:3000/api'
+    this.API_BASE_URL = process.env.VUE_APP_OAUTH_BASE_URL
   }
 
   get (path, params, errorCallback) {

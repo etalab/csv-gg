@@ -1,4 +1,4 @@
-import Api from '@/services/Api.js'
+import Api from '@/services/Api'
 
 const $api = new Api()
 
@@ -50,7 +50,6 @@ const actions = {
     commit('unsetLoggedIn')
     commit('setToken', '')
     commit('setUserData', {})
-    commit('folders/setFolders', [], { root: true })
   }
 }
 
