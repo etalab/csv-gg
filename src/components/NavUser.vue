@@ -22,35 +22,34 @@
 </template>
 
 <script>
-import Api from "@/services/Api";
-import Auth from "@/services/Auth";
+import Api from "@/services/Api"
+import Auth from "@/services/Auth"
 
-const $api = new Api();
-const $auth = new Auth();
+const $api = new Api()
+const $auth = new Auth()
 
 export default {
   computed: {
     user() {
-      return this.$store.state.auth.user;
-    },
+      return this.$store.state.auth.user
+    }
   },
   methods: {
     submitLogin(evt) {
-      evt.preventDefault();
-      window.location = $auth.authUrl();
+      evt.preventDefault()
+      window.location = $auth.authUrl()
     },
     async logout() {
-      await $auth.proceedLogout(this.$store.state.auth.user.token);
-      this.$store.dispatch("auth/logout");
-    },
+      await $auth.proceedLogout(this.$store.state.auth.user.token)
+      this.$store.dispatch("auth/logout")
+    }
   },
   mounted() {
     this.polling = setInterval(() => {
       if (this.$store.state.auth.user.token !== "") {
-        this.$store.dispatch("auth/checkToken", $api);
-        this.$store.dispatch("auth/checkToken");
+        this.$store.dispatch("auth/checkToken", $api)
       }
-    }, 3000);
-  },
-};
+    }, 3000)
+  }
+}
 </script>
