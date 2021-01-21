@@ -29,7 +29,7 @@ instance.interceptors.response.use(response => {
 function defaultErrorCallback () {
 }
 
-export default class Api {
+export default new class {
   constructor () {
     this.API_BASE_URL = process.env.VUE_APP_OAUTH_BASE_URL
   }

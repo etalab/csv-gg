@@ -1,3 +1,5 @@
+import $api from "@/services/Api"
+
 const module = {
   namespaced: true,
   state () {
@@ -34,7 +36,7 @@ const actions = {
   fillUserData ({ commit }, data) {
     commit('setUserData', data)
   },
-  checkToken ({ dispatch }, $api) {
+  checkToken ({ dispatch }) {
       $api.get('me', {}, () => {
       dispatch('logout')
     })

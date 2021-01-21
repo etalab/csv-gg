@@ -22,10 +22,8 @@
 </template>
 
 <script>
-import Api from "@/services/Api"
 import Auth from "@/services/Auth"
 
-const $api = new Api()
 const $auth = new Auth()
 
 export default {
@@ -47,7 +45,7 @@ export default {
   mounted() {
     this.polling = setInterval(() => {
       if (this.$store.state.auth.user.token !== "") {
-        this.$store.dispatch("auth/checkToken", $api)
+        this.$store.dispatch("auth/checkToken")
       }
     }, 3000)
   }

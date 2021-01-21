@@ -6,10 +6,9 @@
 </template>
 
 <script>
-import Api from "@/services/Api"
+import $api from "@/services/Api"
 import Auth from "@/services/Auth"
 
-const $api = new Api()
 const $auth = new Auth()
 
 export default {
