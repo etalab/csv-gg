@@ -1,0 +1,14 @@
+{
+    "$schema": "https://frictionlessdata.io/schemas/table-schema.json",
+    "title": "Schema fixture with address",
+    "fields": [
+        {
+            "name": "id_lieu",
+            "type": "string"
+        },
+        {
+            "name": "adresse_postale",
+            "type": "string"
+        }
+    ]
+}
