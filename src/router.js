@@ -18,6 +18,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/:schema',
+      name: 'home_schema',
+      component: Home
     }
   ]
 })
