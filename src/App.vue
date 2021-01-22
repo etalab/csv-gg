@@ -50,13 +50,13 @@
 </template>
 
 <script>
-import ClientOnly from "vue-client-only";
-import NavUser from "@/components/NavUser.vue";
+import ClientOnly from "vue-client-only"
+import NavUser from "@/components/NavUser.vue"
 
 export default {
   components: {
     ClientOnly,
-    NavUser,
-  },
-};
+    NavUser
+  }
+}
 </script>

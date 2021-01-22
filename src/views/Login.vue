@@ -20,17 +20,24 @@ export default {
   async mounted() {
     if (!this.$store.state.auth.user.loggedIn) {
       try {
-        await this.getoken()
+        await this.getToken()
       } catch (e) {
         // console.error(e.response.data)
         this.$router.push("/")
       }
       this.$store.dispatch("auth/login", this.token).then(() => {
-        $api.get("me").then(response => {
-          this.$store.dispatch("auth/fillUserData", response.data).then(() => {
-            this.$router.push("/")
-          })
-        })
+        $api.get("me").then(
+          response => {
+            this.$store
+              .dispatch("auth/fillUserData", response.data)
+              .then(() => {
+                this.$router.push("/")
+              })
+          },
+          err => {
+            console.log({ err })
+          }
+        )
       })
     } else {
       // console.log("Logged in", this.$store.state.auth.user)
@@ -38,15 +45,8 @@ export default {
     }
   },
   methods: {
-    async getoken() {
-      const queryObject = {}
-      window.location.search
-        .substr(1)
-        .split("&")
-        .forEach(item => {
-          queryObject[item.split("=")[0]] = item.split("=")[1]
-        })
-      this.token = await $auth.retrieveToken(queryObject)
+    async getToken() {
+      this.token = await $auth.retrieveToken({ ...this.$route.query })
     }
   }
 }
