@@ -9,11 +9,12 @@
     <b-nav-item-dropdown right v-if="user && user.loggedIn">
       <!-- Using 'button-content' slot -->
       <template v-slot:button-content>
-        {{ user.data.first_name }}
+        {{ user.data.first_name }} {{ user.data.last_name }}
       </template>
       <b-dropdown-item :href="user.data.page">
-        Profile
+        Mon profil
       </b-dropdown-item>
+      <b-dropdown-divider></b-dropdown-divider>
       <b-dropdown-item @click="logout">
         Se déconnecter
       </b-dropdown-item>
