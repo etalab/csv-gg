@@ -182,7 +182,7 @@ export default {
             return factory(SelectField, field)
           } else if (isBoolean) {
             return factory(RadioField, field)
-          } else if (isAddressField(field)) {
+          } else if (this.isAddressField(field)) {
             return factory(AddressField, field)
           }
           return factory(StringField, field)
