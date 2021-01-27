@@ -21,13 +21,13 @@
         class="mr-2"
         >Télécharger le CSV</b-button
       >
+      <!-- :disabled="!userLoggedIn" -->
       <b-button
-        @click.prevent="publish"
-        :disabled="!userLoggedIn"
         type="button"
         variant="primary"
         class="mr-2"
         :title="publishButtonTitle"
+        v-b-modal="'publish-modal'"
         >Publier sur data.gouv.fr</b-button
       >
       <b-button
@@ -37,6 +37,20 @@
         variant="primary"
         >Ajouter une ligne</b-button
       >
+      <!-- Publish modal -->
+      <b-modal
+        id="publish-modal"
+        title="Publier sur data.gouv.fr"
+        ok-title="Publier"
+        :ok-disabled="publishButtonDisabled"
+        cancel-title="Annuler"
+      >
+        <publish-form
+          :schemaName="schemaName"
+          :organizations="userOrganizations"
+          v-on:form-state-change="enableDisablePublishButton"
+        />
+      </b-modal>
     </div>
     <b-form
       @submit.prevent="submit"
@@ -57,13 +71,16 @@ import Vue from 'vue'
 import StringField from '@/components/StringField.vue'
 import SelectField from '@/components/SelectField.vue'
 import RadioField from '@/components/RadioField.vue'
+import PublishForm from '@/components/PublishForm.vue'
 import { EventBus } from '@/event-bus.js'
 
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL
 
 export default {
   name: 'schemaForm',
-  components: {},
+  components: {
+    PublishForm
+  },
   props: {
     schemaMeta: Object,
     schemaName: String
@@ -79,7 +96,8 @@ export default {
       formValidated: false,
       addingLine: true,
       hasValues: false,
-      fieldNodes: []
+      fieldNodes: [],
+      publishButtonDisabled: true
     }
   },
   watch: {
@@ -149,6 +167,15 @@ export default {
       return this.userLoggedIn
         ? 'Publier le jeu de données'
         : 'Fonctionnalité réservée aux utilisateurs connectés'
+    },
+    userOrganizations() {
+      if (!this.userLoggedIn) {
+        return []
+      }
+      return this.user.data.organizations.map(org => ({
+        value: org.id,
+        text: org.name
+      }))
     }
   },
   methods: {
@@ -288,17 +315,9 @@ export default {
         this.addLine()
       }
     },
-    publish() {
-      // console.log({ user: this.user })
-      console.log({ schema: this.schema })
-      this.$router.push({
-        name: 'publish-form',
-        query: {
-          schemaName: this.schema.title,
-          header: JSON.stringify(this.fieldNames),
-          rows: JSON.stringify(this.lines)
-        }
-      })
+    enableDisablePublishButton(formState) {
+      console.log({ formState })
+      this.publishButtonDisabled = !formState
     }
   }
 }
