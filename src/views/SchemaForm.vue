@@ -21,11 +21,11 @@
         class="mr-2"
         >Télécharger le CSV</b-button
       >
-      <!-- :disabled="!userLoggedIn" -->
       <b-button
         type="button"
         variant="primary"
         class="mr-2"
+        :disabled="!userLoggedIn"
         :title="publishButtonTitle"
         v-b-modal="'publish-modal'"
         >Publier sur data.gouv.fr</b-button
