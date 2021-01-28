@@ -3,7 +3,7 @@
     <p>
       Schéma <strong>{{ schemaName }}</strong>
     </p>
-    <b-form @submit="onSubmit" @reset="onReset">
+    <b-form>
       <!-- Organisation -->
       <b-form-group
         id="input-group-org"
@@ -69,7 +69,11 @@
 export default {
   props: {
     schemaName: String,
-    organizations: Array
+    organizations: Array,
+    value: {
+      type: undefined,
+      required: true
+    }
   },
   data() {
     return {
@@ -86,15 +90,39 @@ export default {
     }
   },
   mounted() {
-    this.form.dataset.title = ''
+    this.$emit('form-state-change', this.okState)
   },
-  methods: {
-    onChange() {
-      const formState =
+  computed: {
+    okState() {
+      return (
+        this.form.org != '' &&
         this.form.dataset.title !== '' &&
         this.form.dataset.description !== '' &&
         this.form.resource.title !== ''
-      this.$emit('form-state-change', formState)
+      )
+    },
+    payload() {
+      return {
+        organizationId: this.form.org,
+        dataset: {
+          title: this.form.dataset.title,
+          description: this.form.dataset.description
+        },
+        resource: {
+          title: this.form.resource.title,
+          schemaName: this.schemaName
+        }
+      }
+    }
+  },
+  methods: {
+    onChange() {
+      const okState = this.okState
+      this.$emit('form-state-change', okState)
+
+      if (okState) {
+        this.$emit('input', this.payload)
+      }
     }
   }
 }

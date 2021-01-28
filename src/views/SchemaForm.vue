@@ -43,12 +43,14 @@
         title="Publier sur data.gouv.fr"
         ok-title="Publier"
         :ok-disabled="publishButtonDisabled"
+        v-on:ok="publishDataset"
         cancel-title="Annuler"
       >
         <publish-form
+          v-model="dataToPublish"
           :schemaName="schemaName"
           :organizations="userOrganizations"
-          v-on:form-state-change="enableDisablePublishButton"
+          v-on:form-state-change="togglePublishButtonState"
         />
       </b-modal>
     </div>
@@ -142,7 +144,7 @@ export default {
       ]
     },
     csvLink() {
-      let csv = this.buildFullCsvContent()
+      const csv = this.buildFullCsvContent()
       // Forcing UTF-8 encoding. See https://stackoverflow.com/questions/17879198
       let data = new Blob(['\uFEFF' + csv], { type: 'text/csv' })
       return window.URL.createObjectURL(data)
@@ -315,9 +317,17 @@ export default {
         this.addLine()
       }
     },
-    enableDisablePublishButton(formState) {
-      console.log({ formState })
+    togglePublishButtonState(formState) {
       this.publishButtonDisabled = !formState
+    },
+    publishDataset() {
+      // Get structured publish form content
+      const publishContent = this.dataToPublish
+      // add fresh CSV content
+      publishContent.resource.content = this.buildFullCsvContent()
+
+      // TODO: really publish
+      alert(JSON.stringify(publishContent, null, 2))
     }
   }
 }
