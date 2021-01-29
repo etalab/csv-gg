@@ -15,6 +15,7 @@
           id="input-org"
           v-model="form.org"
           :options="organizations"
+          v-on:change="onChange"
           required
         ></b-form-select>
       </b-form-group>
