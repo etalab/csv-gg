@@ -25,7 +25,7 @@
         type="button"
         variant="primary"
         class="mr-2"
-        :disabled="!userLoggedIn"
+        :disabled="!userLoggedInWithSomeOrganizations"
         :title="publishButtonTitle"
         v-b-modal="'publish-modal'"
         >Publier sur data.gouv.fr</b-button
@@ -164,10 +164,17 @@ export default {
     userLoggedIn() {
       return this.user && this.user.loggedIn
     },
+    userLoggedInWithSomeOrganizations() {
+      return this.userLoggedIn && this.user.data.organizations.length > 0
+    },
     publishButtonTitle() {
-      return this.userLoggedIn
-        ? 'Publier le jeu de données'
-        : 'Fonctionnalité réservée aux utilisateurs connectés'
+      if (!this.userLoggedIn) {
+        return 'Connectez-vous pour publier une ressource'
+      }
+      if (this.user.data.organizations.length == 0) {
+        return 'Inscrivez-vous à une organisation pour publier une ressource'
+      }
+      return 'Publier le jeu de données'
     },
     userOrganizations() {
       if (!this.userLoggedIn) {
