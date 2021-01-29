@@ -162,7 +162,6 @@ export default {
       return this.$store.state.auth.user
     },
     userLoggedIn() {
-      //   return this.$store.state.auth.user && this.$store.state.auth.user.loggedIn
       return this.user && this.user.loggedIn
     },
     publishButtonTitle() {
