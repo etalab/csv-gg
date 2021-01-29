@@ -177,13 +177,15 @@ export default {
       return 'Publier le jeu de données'
     },
     userOrganizations() {
-      if (!this.userLoggedIn) {
-        return []
-      }
-      return this.user.data.organizations.map(org => ({
-        value: org.id,
-        text: org.name
-      }))
+      return this.userLoggedIn
+        ? this.user.data.organizations
+            .slice(0)
+            .sort((a, b) => a.name > b.name)
+            .map(org => ({
+              value: org.id,
+              text: org.name
+            }))
+        : []
     }
   },
   methods: {
