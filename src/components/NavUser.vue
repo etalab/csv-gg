@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Auth from "@/services/Auth"
+import Auth from '@/services/Auth'
 
 const $auth = new Auth()
 
@@ -40,13 +40,13 @@ export default {
     },
     async logout() {
       await $auth.proceedLogout(this.$store.state.auth.user.token)
-      this.$store.dispatch("auth/logout")
+      this.$store.dispatch('auth/logout')
     }
   },
   mounted() {
     this.polling = setInterval(() => {
-      if (this.$store.state.auth.user.token !== "") {
-        this.$store.dispatch("auth/checkToken")
+      if (this.$store.state.auth.user.token !== '') {
+        this.$store.dispatch('auth/checkToken')
       }
     }, 3000)
   }
