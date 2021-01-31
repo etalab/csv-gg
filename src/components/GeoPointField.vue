@@ -53,6 +53,9 @@ import { EventBus } from '@/event-bus.js'
 // Initial settings
 const GEO_WIDGET_INITIAL_CENTER = [46.8, 2.11] // Center of France
 const GEO_DECIMAL_COUNT = 2
+
+// Geographical map is based on Jawg (https://www.jawg.io/) raster tiles
+// Request for a free API token and pass it through VUE_APP_GEO_ACCESS_TOKEN env variable
 const accessToken = process.env.VUE_APP_GEO_ACCESS_TOKEN
 const GEO_TILES_URL = `https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}.png?access-token=${accessToken}`
 
