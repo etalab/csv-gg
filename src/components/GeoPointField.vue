@@ -11,8 +11,12 @@
         :trim="true"
       />
       <b-input-group-append>
-        <b-button variant="info" v-b-toggle="`${field.name}-collapse`" :title="mapTooltip">
-            carte
+        <b-button
+          variant="info"
+          v-b-toggle="`${field.name}-collapse`"
+          :title="mapTooltip"
+        >
+          carte
         </b-button>
       </b-input-group-append>
     </b-input-group>
@@ -22,19 +26,16 @@
         :center="center"
         :zoom="zoom"
         style="height: 300px; width: 100%"
-        >
-        <l-tile-layer
-          :url="url"
-          :attribution="attribution"
-        />
+      >
+        <l-tile-layer :url="url" :attribution="attribution" />
         <l-marker
           :lat-lng="markerLocation"
           :draggable="true"
           @update:latLng="onMarkerMove"
-          >
+        >
           <l-tooltip>
-            Déplacez moi<br/>
-            pour mettre à jour<br/>
+            Déplacez moi<br />
+            pour mettre à jour<br />
             les coordonnées
           </l-tooltip>
         </l-marker>
@@ -47,7 +48,7 @@
 import FormGroup from '@/components/FormGroup.vue'
 import ValidateField from '@/mixins/ValidateField.vue'
 import { LMap, LTileLayer, LMarker, LTooltip } from 'vue2-leaflet'
-import { EventBus } from '@/event-bus.js';
+import { EventBus } from '@/event-bus.js'
 
 // Initial settings
 const GEO_WIDGET_INITIAL_CENTER = [46.8, 2.11] // Center of France
@@ -81,7 +82,6 @@ export default {
     // Called after marker has been moved
     // either dragging it or setting its location
     onMarkerMove(latLng) {
-
       // marker location
       this.markerLocation = latLng
 
@@ -112,7 +112,7 @@ export default {
       if (str == '') {
         return false
       }
-      const chunks = str.split(',').map((elt) => elt.trim())
+      const chunks = str.split(',').map(elt => elt.trim())
 
       if (chunks.length != 2) {
         return false
@@ -120,11 +120,11 @@ export default {
       const lon = parseFloat(chunks[0])
       const lat = parseFloat(chunks[1])
       if (isNaN(lon) || isNaN(lat)) {
-        return false;
+        return false
       }
       // TODO: check lon and lat bounds
       return { lon, lat }
-    },
+    }
   },
   data() {
     return {
@@ -140,24 +140,24 @@ export default {
                      class="osm-attrib">&copy; OSM contributors</a>`,
       value: '',
       floatPrecision: GEO_DECIMAL_COUNT,
-      showMap: false,
+      showMap: false
     }
   },
   computed: {
     placeHolder() {
-      return this.field.example || "longitude,latitude"
+      return this.field.example || 'longitude,latitude'
     },
     mapTooltip() {
-      return this.showMap ? "cacher la carte" : "afficher la carte"
+      return this.showMap ? 'cacher la carte' : 'afficher la carte'
     }
   },
   mounted() {
     // reset map on new form line
     EventBus.$on('form-reset', () => {
-        this.center = GEO_WIDGET_INITIAL_CENTER
-        this.markerLocation = GEO_WIDGET_INITIAL_CENTER
-        this.showMap = false
-        this.value = ''
+      this.center = GEO_WIDGET_INITIAL_CENTER
+      this.markerLocation = GEO_WIDGET_INITIAL_CENTER
+      this.showMap = false
+      this.value = ''
     })
   }
 }
