@@ -75,6 +75,7 @@ import SelectField from '@/components/SelectField.vue'
 import RadioField from '@/components/RadioField.vue'
 import PublishForm from '@/components/PublishForm.vue'
 import { EventBus } from '@/event-bus.js'
+import $api from '@/services/Api'
 
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL
 
@@ -143,11 +144,18 @@ export default {
         { key: 'actions', label: '' }
       ]
     },
-    csvLink() {
-      const csv = this.buildFullCsvContent()
+    csvBlob() {
+      // Build CSV content
+      let lines = this.lines.map(l => {
+        return this.buildLine(l)
+      })
+      const csv = [this.buildHeaderLine(), ...lines].join('\r\n')
+
       // Forcing UTF-8 encoding. See https://stackoverflow.com/questions/17879198
-      let data = new Blob(['\uFEFF' + csv], { type: 'text/csv' })
-      return window.URL.createObjectURL(data)
+      return new Blob(['\uFEFF' + csv], { type: 'text/csv' })
+    },
+    csvLink() {
+      return window.URL.createObjectURL(this.csvBlob)
     },
     items() {
       return this.lines.map(line => {
@@ -228,12 +236,6 @@ export default {
         this.buildHeaderLine(),
         this.buildLine(this.getCurrentLine())
       ].join('\r\n')
-    },
-    buildFullCsvContent() {
-      let lines = this.lines.map(l => {
-        return this.buildLine(l)
-      })
-      return [this.buildHeaderLine(), ...lines].join('\r\n')
     },
     buildFormData() {
       let formData = new FormData()
@@ -331,11 +333,81 @@ export default {
     publishDataset() {
       // Get structured publish form content
       const publishContent = this.dataToPublish
-      // add fresh CSV content
-      publishContent.resource.content = this.buildFullCsvContent()
 
-      // TODO: really publish
-      alert(JSON.stringify(publishContent, null, 2))
+      // Dataset creation
+      $api
+        .post('datasets', {
+          title: publishContent.dataset.title,
+          description: publishContent.dataset.description,
+          organization: publishContent.organizationId
+        })
+        .then(
+          response => {
+            // new dataset identifier
+            const datasetId = response.data.id
+
+            // Prepare resource file to upload
+            const formData = new FormData()
+            formData.append('file', this.csvBlob, 'data.csv')
+
+            // Resource upload
+            $api
+              .post(`datasets/${datasetId}/upload`, formData, {
+                'Content-Type': 'multipart/form-data'
+              })
+              .then(
+                response => {
+                  // New resource identifier
+                  const resourceId = response.data.id
+                  // eslint-disable-next-line
+                  console.log({ resourceId })
+
+                  const payload = {
+                    title: publishContent.resource.title,
+                    schema: this.schemaName
+                  }
+                  // eslint-disable-next-line
+                  console.log({ payload })
+
+                  // resource update
+                  // Warning: fails if schema name is not one of allowed values:
+                  // Allowed values: etalab/schema-irve, etalab/schema-decp-dpa, scdl/catalogue, scdl/deliberations,
+                  // scdl/equipements, scdl/subventions, etalab/schema-lieux-covoiturage, etalab/schema-stationnement,
+                  // scdl/budget, arsante/schema-dae, NaturalSolutions/schema-arbre, etalab/schema-inclusion-numerique"
+                  $api
+                    .post(
+                      `datasets/${datasetId}/resources/${resourceId}`,
+                      payload
+                    )
+                    .then(
+                      response => {
+                        // eslint-disable-next-line
+                        console.log({ response })
+                        alert('Done!')
+                      },
+                      err => {
+                        // eslint-disable-next-line
+                        console.log(
+                          `Erreur lors de la mise à jour de la ressource : ${err}`
+                        )
+                      }
+                    )
+                },
+                err => {
+                  // eslint-disable-next-line
+                  console.log(
+                    `Erreur lors du téléversement de la ressource : ${err}`
+                  )
+                }
+              )
+          },
+          err => {
+            // eslint-disable-next-line
+            console.log(
+              `Erreur lors de la publication du jeu de données : ${err}`
+            )
+          }
+        )
     }
   }
 }
