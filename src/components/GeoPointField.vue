@@ -52,6 +52,8 @@ import { EventBus } from '@/event-bus.js';
 // Initial settings
 const GEO_WIDGET_INITIAL_CENTER = [46.8, 2.11] // Center of France
 const GEO_DECIMAL_COUNT = 2
+const accessToken = process.env.VUE_APP_GEO_ACCESS_TOKEN
+const GEO_TILES_URL = `https://tile.jawg.io/jawg-sunny/{z}/{x}/{y}.png?access-token=${accessToken}`
 
 export default {
   name: 'GeoPointField',
@@ -129,8 +131,13 @@ export default {
       center: GEO_WIDGET_INITIAL_CENTER,
       markerLocation: GEO_WIDGET_INITIAL_CENTER,
       zoom: 5,
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      accessToken: null,
+      url: GEO_TILES_URL,
+      attribution: `<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank"
+                     class="jawg-attrib">&copy; <b>Jawg</b>Maps</a>
+                     | <a href="https://www.openstreetmap.org/copyright"
+                     title="OpenStreetMap is open data licensed under ODbL" target="_blank"
+                     class="osm-attrib">&copy; OSM contributors</a>`,
       value: '',
       floatPrecision: GEO_DECIMAL_COUNT,
       showMap: false,
