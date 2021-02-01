@@ -375,15 +375,15 @@ export default {
                   // scdl/equipements, scdl/subventions, etalab/schema-lieux-covoiturage, etalab/schema-stationnement,
                   // scdl/budget, arsante/schema-dae, NaturalSolutions/schema-arbre, etalab/schema-inclusion-numerique"
                   $api
-                    .post(
-                      `datasets/${datasetId}/resources/${resourceId}`,
+                    .put(
+                      `datasets/${datasetId}/resources/${resourceId}/`,
                       payload
                     )
                     .then(
                       response => {
                         // eslint-disable-next-line
                         console.log({ response })
-                        alert('Done!')
+                        alert('Publication terminée')
                       },
                       err => {
                         // eslint-disable-next-line
