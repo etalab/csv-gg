@@ -41,9 +41,9 @@ export default new class {
     return instance.get(`${this.API_BASE_URL}/api/1/${path}/`, { params }).catch(errorCallback)
   }
 
-  post (path, data, headers, errorCallback) {
-    headers = headers || {}
+  post (path, data, errorCallback, headers) {
     errorCallback = errorCallback || defaultErrorCallback
+    headers = headers || {}
     return instance.post(`${this.API_BASE_URL}/api/1/${path}/`, data, headers).catch(errorCallback)
   }
 

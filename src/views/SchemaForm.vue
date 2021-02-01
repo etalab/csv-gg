@@ -336,78 +336,67 @@ export default {
 
       // Dataset creation
       $api
-        .post('datasets', {
-          title: publishContent.dataset.title,
-          description: publishContent.dataset.description,
-          organization: publishContent.organizationId
-        })
-        .then(
-          response => {
-            // new dataset identifier
-            const datasetId = response.data.id
-
-            // Prepare resource file to upload
-            const formData = new FormData()
-            formData.append('file', this.csvBlob, 'data.csv')
-
-            // Resource upload
-            $api
-              .post(`datasets/${datasetId}/upload`, formData, {
-                'Content-Type': 'multipart/form-data'
-              })
-              .then(
-                response => {
-                  // New resource identifier
-                  const resourceId = response.data.id
-                  // eslint-disable-next-line
-                  console.log({ resourceId })
-
-                  const payload = {
-                    title: publishContent.resource.title,
-                    schema: this.schemaName
-                  }
-                  // eslint-disable-next-line
-                  console.log({ payload })
-
-                  // resource update
-                  // Warning: fails if schema name is not one of allowed values:
-                  // Allowed values: etalab/schema-irve, etalab/schema-decp-dpa, scdl/catalogue, scdl/deliberations,
-                  // scdl/equipements, scdl/subventions, etalab/schema-lieux-covoiturage, etalab/schema-stationnement,
-                  // scdl/budget, arsante/schema-dae, NaturalSolutions/schema-arbre, etalab/schema-inclusion-numerique"
-                  $api
-                    .put(
-                      `datasets/${datasetId}/resources/${resourceId}/`,
-                      payload
-                    )
-                    .then(
-                      response => {
-                        // eslint-disable-next-line
-                        console.log({ response })
-                        alert('Publication terminée')
-                      },
-                      err => {
-                        // eslint-disable-next-line
-                        console.log(
-                          `Erreur lors de la mise à jour de la ressource : ${err}`
-                        )
-                      }
-                    )
-                },
-                err => {
-                  // eslint-disable-next-line
-                  console.log(
-                    `Erreur lors du téléversement de la ressource : ${err}`
-                  )
-                }
-              )
+        .post(
+          'datasets',
+          {
+            title: publishContent.dataset.title,
+            description: publishContent.dataset.description,
+            organization: publishContent.organizationId
           },
           err => {
-            // eslint-disable-next-line
-            console.log(
-              `Erreur lors de la publication du jeu de données : ${err}`
-            )
+            alert(`Erreur lors de la publication du jeu de données : ${err}`)
           }
         )
+        .then(response => {
+          // new dataset identifier
+          const datasetId = response.data.id
+
+          // Prepare resource file to upload
+          const formData = new FormData()
+          formData.append('file', this.csvBlob, 'data.csv')
+
+          // Resource upload
+          $api
+            .post(
+              `datasets/${datasetId}/upload`,
+              formData,
+              err => {
+                // eslint-disable-next-line
+                console.log(
+                  `Erreur lors du téléversement de la ressource : ${err}`
+                )
+              },
+              { 'Content-Type': 'multipart/form-data' }
+            )
+            .then(response => {
+              // New resource identifier
+              const resourceId = response.data.id
+
+              const payload = {
+                title: publishContent.resource.title,
+                schema: this.schemaName
+              }
+
+              // resource update
+              // Warning: fails if schema name is not one of allowed values:
+              // Allowed values: etalab/schema-irve, etalab/schema-decp-dpa, scdl/catalogue, scdl/deliberations,
+              // scdl/equipements, scdl/subventions, etalab/schema-lieux-covoiturage, etalab/schema-stationnement,
+              // scdl/budget, arsante/schema-dae, NaturalSolutions/schema-arbre, etalab/schema-inclusion-numerique"
+              $api
+                .put(
+                  `datasets/${datasetId}/resources/${resourceId}/`,
+                  payload,
+                  err => {
+                    alert(
+                      `Erreur lors de la mise à jour de la ressource : ${err}`
+                    )
+                  }
+                )
+                .then(response => {
+                  alert("La publication s'est correctement terminée")
+                })
+            })
+        })
     }
   }
 }
