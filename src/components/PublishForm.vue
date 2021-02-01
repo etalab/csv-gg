@@ -1,14 +1,15 @@
 <template>
   <div>
-    <p>
-      Schéma <strong>{{ schemaName }}</strong>
-    </p>
     <b-form>
+      <p class="text-muted">
+        Publiez le fichier CSV en cours d'édition dans un nouveau jeu de données
+      </p>
+
       <!-- Organisation -->
       <b-form-group
         id="input-group-org"
         label-for="input-org"
-        description="Choisissez l'organisation au titre de laquelle vous intervenez"
+        description="Choisissez l'organisation dans laquelle sera créé le jeu de données"
       >
         <template v-slot:label>
           Organisation <span class="text-danger">*</span>
@@ -28,7 +29,7 @@
         label-for="input-dataset-title"
       >
         <template v-slot:label>
-          Titre du jeu de données <span class="text-danger">*</span>
+          Nom du jeu de données <span class="text-danger">*</span>
         </template>
         <b-form-input
           id="input-dataset-title"
@@ -61,13 +62,14 @@
         label-for="input-resource-title"
       >
         <template v-slot:label>
-          Titre de la resource <span class="text-danger">*</span>
+          Nom du fichier CSV <span class="text-danger">*</span>
         </template>
         <b-form-input
           id="input-resource-title"
           v-model="form.resource.title"
           v-on:change="onChange"
           :trim="true"
+          placeholder="data.csv"
         ></b-form-input>
       </b-form-group>
       <p class="text-muted">
