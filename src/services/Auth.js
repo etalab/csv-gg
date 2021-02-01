@@ -3,8 +3,8 @@ import axios from 'axios'
 
 export default class Auth {
     constructor() {
-        this.BASE_URL = process.env.VUE_APP_OAUTH_BASE_URL
-        this.redirectURI = process.env.VUE_APP_OAUTH_CALLBACK // @oauth_callback
+        this.BASE_URL = process.env.VUE_APP_DATAGOUV_API_URL
+        this.redirectURI = process.env.VUE_APP_OAUTH_CALLBACK
         this.clientId = process.env.VUE_APP_OAUTH_CLIENT_ID
         this.clientSecret = process.env.VUE_APP_OAUTH_CLIENT_SECRET
     }

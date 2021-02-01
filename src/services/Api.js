@@ -31,7 +31,7 @@ function defaultErrorCallback () {
 
 export default new class {
   constructor () {
-    this.API_BASE_URL = process.env.VUE_APP_OAUTH_BASE_URL
+    this.API_BASE_URL = process.env.VUE_APP_DATAGOUV_API_URL
   }
 
   get (path, params, errorCallback) {
