@@ -7,10 +7,12 @@
       <!-- Organisation -->
       <b-form-group
         id="input-group-org"
-        label="Organisation :"
         label-for="input-org"
         description="Choisissez l'organisation au titre de laquelle vous intervenez"
       >
+        <template v-slot:label>
+          Organisation <span class="text-danger">*</span>
+        </template>
         <b-form-select
           id="input-org"
           v-model="form.org"
@@ -23,9 +25,11 @@
       <!-- Dataset title -->
       <b-form-group
         id="input-group-dataset-title"
-        label="Titre du jeu de données :"
         label-for="input-dataset-title"
       >
+        <template v-slot:label>
+          Titre du jeu de données <span class="text-danger">*</span>
+        </template>
         <b-form-input
           id="input-dataset-title"
           v-model="form.dataset.title"
@@ -37,13 +41,14 @@
       <!-- Dataset description -->
       <b-form-group
         id="input-group-dataset-description"
-        label="Description du jeu de données :"
         label-for="input-dataset-description"
       >
+        <template v-slot:label>
+          Description du jeu de données <span class="text-danger">*</span>
+        </template>
         <b-form-textarea
           id="input-dataset-description"
           v-model="form.dataset.description"
-          placeholder="Information sur le jeu de données..."
           rows="4"
           v-on:change="onChange"
           :trim="true"
@@ -53,9 +58,11 @@
       <!-- Resource title -->
       <b-form-group
         id="input-group-resource-title"
-        label="Titre de la resource :"
         label-for="input-resource-title"
       >
+        <template v-slot:label>
+          Titre de la resource <span class="text-danger">*</span>
+        </template>
         <b-form-input
           id="input-resource-title"
           v-model="form.resource.title"
@@ -63,6 +70,10 @@
           :trim="true"
         ></b-form-input>
       </b-form-group>
+      <p class="text-muted">
+        Les champs suivis d'une astérisque (<span class="text-danger">*</span>)
+        sont obligatoires
+      </p>
     </b-form>
   </div>
 </template>
