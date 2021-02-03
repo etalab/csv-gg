@@ -207,7 +207,7 @@ export default {
           .then(data => {
               this.formValidated = true
               this.faultyFields = []
-              const errors = data.report.tables[0].errors
+              const errors = data.report.tasks[0].errors
               if (errors && errors.length > 0) {
                   errors.forEach((error) => {
                       this.dispatchError(error)
