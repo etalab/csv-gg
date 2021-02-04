@@ -73,9 +73,11 @@ import Vue from 'vue'
 import StringField from '@/components/StringField.vue'
 import SelectField from '@/components/SelectField.vue'
 import RadioField from '@/components/RadioField.vue'
+import AddressField from '@/components/AddressField.vue'
 import PublishForm from '@/components/PublishForm.vue'
 import { EventBus } from '@/event-bus.js'
 import $api from '@/services/Api'
+
 
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL
 
@@ -237,6 +239,12 @@ export default {
         this.buildLine(this.getCurrentLine())
       ].join('\r\n')
     },
+    buildFullCsvContent() {
+      let lines = this.lines.map(l => {
+          return this.buildLine(l)
+      })
+      return [this.buildHeaderLine(), ...lines].join('\r\n')
+    },
     buildFormData() {
       let formData = new FormData()
       // Forcing UTF-8 encoding. See https://stackoverflow.com/questions/17879198
@@ -262,14 +270,30 @@ export default {
         let instance = new className({ propsData: { field } })
         instance.$mount()
         return this.$refs.container.appendChild(instance.$el)
-      }
+      },
+      removeFieldNodes() {
+          this.fieldNodes.forEach((child) => {
+              this.$refs.container.removeChild(child)
+          })
+          this.fieldNodes = []
+      },
+      isAddressField(field) {
+        const patterns = ["ad_", "addr_", "address", "adr_", "adresse"];
+        const lowerFieldName = field.name.toLowerCase();
+        return patterns.some((elt) => lowerFieldName.includes(elt));
+      },
+      addField(field) {
+          const hasEnum = field.constraints && field.constraints.enum
+          const isBoolean = field.type === "boolean"
 
-      if (hasEnum) {
-        return factory(SelectField, field)
-      } else if (isBoolean) {
-        return factory(RadioField, field)
-      }
-      return factory(StringField, field)
+          if (hasEnum) {
+            return factory(SelectField, field)
+          } else if (isBoolean) {
+            return factory(RadioField, field)
+          } else if (this.isAddressField(field)) {
+            return factory(AddressField, field)
+          }
+          return factory(StringField, field)
     },
     dispatchError(error) {
       let index = error['column-number']
