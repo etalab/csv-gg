@@ -24,6 +24,7 @@ import StringField from '@/components/StringField.vue'
 import SelectField from '@/components/SelectField.vue'
 import RadioField from '@/components/RadioField.vue'
 import GeoPointField from '@/components/GeoPointField.vue'
+import AddressField from '@/components/AddressField.vue'
 import { EventBus } from '@/event-bus.js';
 
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL
@@ -162,6 +163,11 @@ export default {
           })
           this.fieldNodes = []
       },
+      isAddressField(field) {
+        const patterns = ["ad_", "addr_", "address", "adr_", "adresse"];
+        const lowerFieldName = field.name.toLowerCase();
+        return patterns.some((elt) => lowerFieldName.includes(elt));
+      },
       addField(field) {
           const hasEnum = field.constraints && field.constraints.enum
           const isBoolean = field.type === "boolean"
@@ -180,6 +186,8 @@ export default {
             return factory(RadioField, field)
           } else if (isGeoPoint) {
             return factory(GeoPointField, field)
+          } else if (this.isAddressField(field)) {
+            return factory(AddressField, field)
           }
           return factory(StringField, field)
       },
