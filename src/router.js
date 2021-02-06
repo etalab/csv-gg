@@ -1,6 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
+import SchemaForm from './views/SchemaForm.vue'
+import Homepage from './views/Homepage.vue'
+import SchemaTable from './views/SchemaTable.vue'
+import SelectFillingMode from './views/SelectFillingMode.vue'
+import UploadData from './views/UploadData.vue'
+import Login from './views/Login.vue'
 
 Vue.use(Router)
 
@@ -9,14 +14,34 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/:schema',
+      path: '/form',
       name: 'home_schema',
-      component: Home
-  },
+      component: SchemaForm
+    },
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Homepage
+    },
+    {
+      path: '/select',
+      name: 'select',
+      component: SelectFillingMode
+    },
+    {
+      path: '/upload',
+      name: 'upload',
+      component: UploadData
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
+    },
+    {
+      path: '/table',
+      name: 'table',
+      component: SchemaTable
     }
   ]
 })

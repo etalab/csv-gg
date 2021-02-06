@@ -1,0 +1,104 @@
+.rf-centered {
+  text-align: center;
+}
+
+.rf-bg--alt, .rf-bg--alt h2 {
+  background-color: var(--bf500);
+  color: var(--g100);
+}
+
+.boxes{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.box{
+  border-radius:5px;
+  box-shadow: 2px 2px 2px 2px #cccccc;
+  transition: box-shadow .3s;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+  padding: 20px;
+  vertical-align: middle;
+  width: 350px;
+  min-height: 150px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
+.style-schema{
+  background-color: white;
+  color: #666666;
+}
+
+.style-saisie{
+  background-color:#0069CA;
+  color: white;
+}
+.box-schema:hover{
+  box-shadow: 5px 10px 5px #cccccc;
+}
+.box-header{
+  width: 280px;
+  min-height: 60px;
+  float: left;
+  text-align: left;
+  font-size: 18px;
+}
+.box-logo{
+  min-height: 60px;
+  width: 30px;
+  float: left;
+}
+.box-content{
+  width: 100%;
+  text-align: left;
+  padding-top: 10px;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+
+.radio-boxes{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: left;
+}
+
+.radio-box{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-right: 20px;
+  vertical-align: middle;
+}
+
+.button-boxes{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.homepage-box{
+  padding-right: 20px;
+  color: #060191;
+  min-width: 50%;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.rf-btn-light{
+  background-color: #88c4f2;
+  color: white;
+  border: 0px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 24px;
+  padding-right: 24px;
+}

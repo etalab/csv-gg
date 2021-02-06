@@ -1,5 +1,4 @@
 VUE_APP_VALIDATA_API_URL=https://validata-api-dev.app.etalab.studio/
-
 VUE_APP_SCHEMAS_CATALOG_URL=https://schema.data.gouv.fr/schemas/schemas.json
 
 VUE_APP_OAUTH_BASE_URL=https://demo.data.gouv.fr/fr
