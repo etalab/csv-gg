@@ -11,6 +11,7 @@ td.cell.noselectx(
   @mousedown='$emit("mousedown", $event)'
   @mouseover='$emit("mouseover", $event)'
   @mouseup='$emit("mouseup", $event)'
+  @mouseenter='$emit("mouseenter",$event)'
 )
   span(v-if='column.type === "supp"') 
     img(src='../static/images/remove.png',width="30px",height="30px")

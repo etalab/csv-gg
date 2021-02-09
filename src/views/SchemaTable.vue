@@ -278,6 +278,9 @@ export default {
 
   },
   methods: {
+      test(){
+          console.log('enterr')
+      },
       buildForm() {
           let loader = this.$loading.show();
           fetch(this.schemaMeta.schema_url).then(r => {
@@ -367,14 +370,10 @@ export default {
       buildCurrentCsvContent() {
           let finalcsv = ''
           finalcsv = this.buildHeaderLine()
-          console.log(this.rows.length)
           this.rows.forEach((row) => {
-              console.log('test')
-              console.log(this.buildLine(row));
               finalcsv = finalcsv+"\r\n"
               finalcsv = finalcsv+this.buildLine(row)
           });
-          console.log(finalcsv)
 
           return finalcsv
       },
@@ -450,12 +449,20 @@ export default {
           let loader = this.$loading.show();
           
           this.rowsError.forEach((re) => {
-              re = {...this.emptyRowError}
+              for (const property in re) {
+                  if(property != 'idRowVEG'){
+                      re[property] = '';
+                  }
+              } 
           });
           this.rowsColor.forEach((rc) => {
-              rc = {...this.emptyRowColor}
+              for (const property in rc) {
+                  if(property != 'idRowVEG'){
+                      rc[property] = '';
+                  }
+              } 
           });
-          
+          console.log(this.rowsColor);
 
           fetch(`${VALIDATA_API_URL}/validate`, {
               method: 'POST',
@@ -694,8 +701,6 @@ export default {
     
     updateDatasetUpdateResource(publishContent){
 
-      console.log("updateDatasetUpdateResource")
-      console.log(publishContent)
       $api
         .put(
           'datasets/'+publishContent.existingDataset,
@@ -756,8 +761,6 @@ export default {
         })
     },
     updateDatasetCreateResource(publishContent){
-      console.log("updateDatasetCreateResource")
-      console.log(publishContent)
       $api
         .put(
           'datasets/'+publishContent.existingDataset,
@@ -924,7 +927,6 @@ export default {
 
 
       showModal() {
-          console.log("pppppppppp")
         this.$refs['modal1'].show()
       },
       hideModal() {
