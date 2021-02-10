@@ -8,7 +8,8 @@
     "build-production": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
     "now-dev": "vue-cli-service serve  --port=$PORT",
-    "now-build": "vue-cli-service build"
+    "now-build": "vue-cli-service build",
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "@gouvfr/all": "^0.4.0",
