@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --host localhost",
-    "start": "cd dist/",
     "build": "vue-cli-service build",
     "build-production": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
     "now-dev": "vue-cli-service serve  --port=$PORT",
     "now-build": "vue-cli-service build",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build-production",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@gouvfr/all": "^0.4.0",
