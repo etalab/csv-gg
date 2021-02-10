@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --host localhost",
-    "start": "NODE_ENV=production node dist/index.js",
     "build": "vue-cli-service build",
     "build-production": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint",
