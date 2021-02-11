@@ -33,6 +33,8 @@ export default class Auth {
         const encodedState = encodeURIComponent(state)
         const encodedCC = encodeURIComponent(codeChallenge)
 
+        console.log(process.env.VUE_APP_OAUTH_CALLBACK)
+        console.log(redirectURI)
             
         return `${this.BASE_URL}/oauth/authorize?redirect_uri=${redirectURI}&response_type=code&state=${encodedState}&client_id=${this.clientId}&scope=default&code_challenge=${encodedCC}&code_challenge_method=S256`
     }
