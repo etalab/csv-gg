@@ -23,67 +23,68 @@
 </template>
 
 <script>
-import { EventBus } from '@/event-bus.js'
-import ValidateField from '@/mixins/ValidateField.vue'
-import FormGroup from '@/components/FormGroup.vue'
-import VueSimpleSuggest from 'vue-simple-suggest'
-import queryString from 'query-string'
+import VueSimpleSuggest from 'vue-simple-suggest';
+import queryString from 'query-string';
+// eslint-disable-next-line import/extensions
+import { EventBus } from '../event-bus.js';
+import ValidateField from '../mixins/ValidateField.vue';
+import FormGroup from './FormGroup.vue';
 
 export default {
-    name: 'AddressField',
-    mixins: [ValidateField],
-    components: {
-        FormGroup,
-        VueSimpleSuggest
+  name: 'AddressField',
+  mixins: [ValidateField],
+  components: {
+    FormGroup,
+    VueSimpleSuggest,
+  },
+  data() {
+    return {
+      value: '',
+    };
+  },
+  methods: {
+    // Function returning a promise as a factory for suggestion lists.
+    getSuggestionList(inputValue) {
+      return new Promise((resolve, reject) => {
+        const url = queryString.stringifyUrl({
+          url: 'https://api-adresse.data.gouv.fr/search/',
+          query: {
+            q: inputValue,
+          },
+        });
+        fetch(url).then((response) => {
+          if (!response.ok) {
+            reject();
+          }
+          response.json().then((json) => {
+            resolve(json.features.map((feature) => ({ label: feature.properties.label })));
+          }).catch((e) => {
+            reject(e);
+          });
+        });
+      });
     },
-    data() {
-        return {
-            value: ''
-        }
+    onChange() {
+      const text = this.value;
+      EventBus.$emit('field-error', this.field.name, false);
+      EventBus.$emit('field-value-changed', this.field.name, text);
     },
-    methods: {
-        // Function returning a promise as a factory for suggestion lists.
-        getSuggestionList(inputValue) {
-            return new Promise((resolve, reject) => {
-                let url = queryString.stringifyUrl({
-                    url: 'https://api-adresse.data.gouv.fr/search/',
-                    query: {
-                        q: inputValue
-                    }
-                })
-                fetch(url).then(response => {
-                    if (!response.ok) {
-                        reject()
-                    }
-                    response.json().then(json => {
-                        resolve(json.features.map(feature => ({label: feature.properties.label})))
-                    }).catch(e => {
-                        reject(e)
-                    })
-                })
-            })
-        },
-        onChange() {
-            const text = this.value
-            EventBus.$emit('field-error', this.field.name, false)
-            EventBus.$emit('field-value-changed', this.field.name, text)
-        }
+  },
+  computed: {
+    placeholder() {
+      return this.field.example || '3 rue des Mimosas';
     },
-    computed: {
-        placeholder() {
-            return this.field.example || "3 rue des Mimosas"
-        },
-        inputId() {
-            return `field-${this.field.name}`
-        }
+    inputId() {
+      return `field-${this.field.name}`;
     },
-    mounted() {
-        // reset input on new form line
-        EventBus.$on('form-reset', () => {
-            this.value = ''
-        })
-  }
-}
+  },
+  mounted() {
+    // reset input on new form line
+    EventBus.$on('form-reset', () => {
+      this.value = '';
+    });
+  },
+};
 </script>
 
 <style>

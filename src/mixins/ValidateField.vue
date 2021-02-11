@@ -1,53 +1,55 @@
 <script>
-import { EventBus } from '@/event-bus.js';
+// eslint-disable-next-line import/extensions
+import { EventBus } from '../event-bus.js';
 
 export default {
-    props: {
-        field: Object,
+  props: {
+    field: Object,
+  },
+  data() {
+    return {
+      error: false,
+      formValidated: false,
+      value: null,
+    };
+  },
+  mounted() {
+    EventBus.$on('field-error', (fieldName, error) => {
+      if (this.field.name !== fieldName) return;
+      this.error = error;
+    });
+    EventBus.$on('field-no-error', (fieldName) => {
+      if (this.field.name !== fieldName) return;
+      this.error = false;
+    });
+    EventBus.$on('form-validated', () => {
+      this.formValidated = true;
+    });
+    EventBus.$on('form-reset', () => {
+      this.formValidated = false;
+      this.error = false;
+      this.value = null;
+    });
+  },
+  computed: {
+    isValid() {
+      if (!this.formValidated) return null;
+      return !this.error;
     },
-    data() {
-        return {
-            error: false,
-            formValidated: false,
-            value: null,
-        }
+    isRequired() {
+      return this.field.constraints ? this.field.constraints.required : false;
     },
-    mounted() {
-        EventBus.$on('field-error', (field_name, error) => {
-            if (this.field.name !== field_name) return
-            this.error = error
-        })
-        EventBus.$on('field-no-error', (field_name) => {
-            if (this.field.name !== field_name) return
-            this.error = false
-        })
-        EventBus.$on('form-validated', () => {
-            this.formValidated = true
-        })
-        EventBus.$on('form-reset', () => {
-            this.formValidated = false
-            this.error = false
-            this.value = null
-        })
+  },
+  methods: {
+    onInput(event) {
+      this.formValidated = false;
+      this.error = false;
+      EventBus.$emit('field-value-changed', this.field.name, event);
     },
-    computed: {
-        isValid() {
-            if (!this.formValidated) return null
-            return !this.error
-        },
-        isRequired() {
-            return this.field.constraints ? this.field.constraints.required : false
-        },
-    },
-    methods: {
-        onInput(event) {
-            this.formValidated = false
-            this.error = false
-            EventBus.$emit('field-value-changed', this.field.name, event)
-        }
-    }
-}
+  },
+};
 </script>
+
 <style>
 label.required::before {
     content: '✱';

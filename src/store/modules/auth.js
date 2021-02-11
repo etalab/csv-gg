@@ -1,51 +1,55 @@
-import $api from "@/services/Api"
+import $api from '../../services/Api';
 
 const module = {
   namespaced: true,
-  state () {
+  state() {
     return {
       user: {
         loggedIn: false,
         token: '',
-        data: {}
-      }
-    }
-  }
-}
+        data: {},
+      },
+    };
+  },
+};
 
 const mutations = {
-  setLoggedIn (state) {
-    state.user.loggedIn = true
+  setLoggedIn(state) {
+    // eslint-disable-next-line no-param-reassign
+    state.user.loggedIn = true;
   },
-  unsetLoggedIn (state) {
-    state.user.loggedIn = false
+  unsetLoggedIn(state) {
+    // eslint-disable-next-line no-param-reassign
+    state.user.loggedIn = false;
   },
-  setToken (state, token) {
-    state.user.token = token
+  setToken(state, token) {
+    // eslint-disable-next-line no-param-reassign
+    state.user.token = token;
   },
-  setUserData (state, data) {
-    state.user.data = data
-  }
-}
+  setUserData(state, data) {
+    // eslint-disable-next-line no-param-reassign
+    state.user.data = data;
+  },
+};
 
 const actions = {
-  login ({ commit }, token) {
-    commit('setLoggedIn')
-    commit('setToken', token)
+  login({ commit }, token) {
+    commit('setLoggedIn');
+    commit('setToken', token);
   },
-  fillUserData ({ commit }, data) {
-    commit('setUserData', data)
+  fillUserData({ commit }, data) {
+    commit('setUserData', data);
   },
-  checkToken ({ dispatch }) {
-      $api.get('me', {}, () => {
-      dispatch('logout')
-    })
+  checkToken({ dispatch }) {
+    $api.get('me', {}, () => {
+      dispatch('logout');
+    });
   },
-  logout ({ commit }) {
-    commit('unsetLoggedIn')
-    commit('setToken', '')
-    commit('setUserData', {})
-  }
-}
+  logout({ commit }) {
+    commit('unsetLoggedIn');
+    commit('setToken', '');
+    commit('setUserData', {});
+  },
+};
 
-export default { ...module, mutations, actions }
+export default { ...module, mutations, actions };

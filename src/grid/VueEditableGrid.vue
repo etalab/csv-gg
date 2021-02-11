@@ -72,21 +72,22 @@ div.vue-editable-grid
 </template>
 
 <script>
-import filterAndSort from './filter-and-sort'
-import { checkFocus, cellValueParser } from './helpers'
-import { cellFormatter } from './vue-filters'
-import { initResize } from './header-resize'
-import Paginate from './Paginate.vue'
-import Cell from './Cell'
-import Filters from './Filters'
+/* eslint no-use-before-define: 0 */
 
-const isWriteableKey = code =>
-  (code >= 48 && code <= 57) || // 0 - 9
-  (code >= 65 && code <= 90) || // a-z
-  (code >= 96 && code <= 105) || // 0-9 numpad
-  (code >= 188 && code <= 191) //
+import filterAndSort from './filter-and-sort';
+import { checkFocus, cellValueParser } from './helpers';
+import { cellFormatter } from './vue-filters';
+import { initResize } from './header-resize';
+import Paginate from './Paginate.vue';
+import Cell from './Cell.vue';
+import Filters from './Filters.vue';
 
-let changePending = false
+const isWriteableKey = (code) => (code >= 48 && code <= 57) // 0 - 9
+  || (code >= 65 && code <= 90) // a-z
+  || (code >= 96 && code <= 105) // 0-9 numpad
+  || (code >= 188 && code <= 191); //
+
+let changePending = false;
 
 export default {
   components: { Paginate, Cell, Filters },
@@ -94,16 +95,16 @@ export default {
     id: { type: String, required: true },
     columnDefs: { type: Array, required: true },
     rowData: { type: Array, required: true },
-    rowDataColor: { type: Object, required: true },
+    rowDataColor: { type: Array, required: true },
     fieldNames: { type: Array, required: true },
     rowDataKey: { type: String, required: true },
     enableFilters: { type: Boolean, default: true },
     pageCount: { type: Number, default: 0 },
     itemHeight: { type: Number, default: 30 },
     virtualScrollOffset: { type: Number, default: 3 },
-    onlyBorder: { type: Boolean, default: true }
+    onlyBorder: { type: Boolean, default: true },
   },
-  data () {
+  data() {
     return {
       selStart: [],
       selEnd: [],
@@ -121,393 +122,429 @@ export default {
       offsetRows: 0,
       visibleRows: [],
       isSelecting: false,
-      selStartSelection: []
-    }
+      selStartSelection: [],
+    };
   },
-  created () {
-    document.addEventListener('keydown', $event => {
+  created() {
+    document.addEventListener('keydown', ($event) => {
       if (!this.focused || this.cellEditing.length) {
-        return
+        return;
       }
-      const key = $event.key
-      const isControl = $event.metaKey || $event.ctrlKey
-      const isShift = $event.shiftKey
+      const key = $event.key;
+      const isControl = $event.metaKey || $event.ctrlKey;
+      const isShift = $event.shiftKey;
       if (key === 'ArrowDown') {
-        if (isControl) this.selectLastRow()
-        else this.sumSelectionRow(1)
-        $event.preventDefault()
+        if (isControl) this.selectLastRow();
+        else this.sumSelectionRow(1);
+        $event.preventDefault();
       } else if (key === 'ArrowRight') {
-        if (isControl) this.selectLastCol()
-        else this.sumSelectionCol(1)
-        $event.preventDefault()
+        if (isControl) this.selectLastCol();
+        else this.sumSelectionCol(1);
+        $event.preventDefault();
       } else if (key === 'ArrowUp') {
-        if (isControl) this.selectFirstRow()
-        else this.sumSelectionRow(-1)
-        $event.preventDefault()
+        if (isControl) this.selectFirstRow();
+        else this.sumSelectionRow(-1);
+        $event.preventDefault();
       } else if (key === 'ArrowLeft') {
-        console.log($event);
-        //if (isControl) this.selectFirstCol()
-        //else 
-        this.sumSelectionCol(-1)
-        $event.preventDefault()
+        // if (isControl) this.selectFirstCol()
+        // else
+        this.sumSelectionCol(-1);
+        $event.preventDefault();
       } else if (key === 'Tab') {
-        this.sumSelectionCol(isShift ? -1 : 1)
-        $event.preventDefault()
+        this.sumSelectionCol(isShift ? -1 : 1);
+        $event.preventDefault();
       } else if (key === 'Enter') {
-        this.sumSelectionRow(1)
-        $event.preventDefault()
+        this.sumSelectionRow(1);
+        $event.preventDefault();
       } else if (key === 'Delete') {
-        const { colData, rowData, rowIndex, colIndex } = this.getCell()
-        this.setEditableValue(rowData, colData, rowIndex, colIndex, null, true, null)
+        const { colData, rowData, rowIndex, colIndex } = this.getCell();
+        this.setEditableValue(rowData, colData, rowIndex, colIndex, null, true, null);
       } else if (key === 'F2') {
-        const { colData, rowData, rowIndex, colIndex } = this.getCell()
-        this.tryEdit(rowData, colData, rowIndex, colIndex)
+        const { colData, rowData, rowIndex, colIndex } = this.getCell();
+        this.tryEdit(rowData, colData, rowIndex, colIndex);
       } else if (key.toLowerCase() === 'v' && isControl) {
-        this.$refs.tmp.value = ''
-        this.$refs.tmp.focus()
+        this.$refs.tmp.value = '';
+        this.$refs.tmp.focus();
         setTimeout(() => {
-          const pasted = this.$refs.tmp.value
+          const pasted = this.$refs.tmp.value;
           const arrayPasted = pasted.split('\n').filter((row, index, array) => {
-            const isLastRow = index === array.length - 1
-            return !(isLastRow && row === '')
-          }).map(row => row.split('\t'))
-          const [sRowIndex, sColIndex] = this.selStart
-          const [eRowIndex, eColIndex] = this.selEnd
+            const isLastRow = index === array.length - 1;
+            return !(isLastRow && row === '');
+          }).map((row) => row.split('\t'));
+          const [sRowIndex, sColIndex] = this.selStart;
+          const [eRowIndex, eColIndex] = this.selEnd;
           // paste all
           if (sRowIndex === eRowIndex && sColIndex === eColIndex) {
-            let rowIndex = null
-            let columnIndex = null
+            let rowIndex = null;
+            let columnIndex = null;
+            console.log(arrayPasted);
+            console.log(this.rowData);
+            let cell = this.getCell();
+            console.log(cell);
+            if(arrayPasted.length > (this.rowData.length - cell.rowIndex)) {
+              this.addMultRows(cell.rowIndex-this.rowData.length+arrayPasted.length);
+              console.log('add rows')
+            }
             arrayPasted.forEach((rowsData, rIdx) => {
               rowsData.forEach((value, cIdx) => {
-                const row = this.rowDataPage[sRowIndex + rIdx]
-                const column = this.columnDefs[sColIndex + cIdx]
+                const row = this.rowDataPage[sRowIndex + rIdx];
+                const column = this.columnDefs[sColIndex + cIdx];
                 if (row && column && column.editable) {
-                  rowIndex = sRowIndex + rIdx
-                  columnIndex = sColIndex + cIdx
-                  this.setCellError(rowIndex, columnIndex, false)
+                  rowIndex = sRowIndex + rIdx;
+                  columnIndex = sColIndex + cIdx;
+                  this.setCellError(rowIndex, columnIndex, false);
                   try {
-                    value = cellValueParser(column, row, value, false)
+                    // eslint-disable-next-line no-param-reassign
+                    value = cellValueParser(column, row, value, false);
                   } catch (error) {
-                    this.setCellError(rowIndex, columnIndex, error)
-                    value = null
+                    this.setCellError(rowIndex, columnIndex, error);
+                    // eslint-disable-next-line no-param-reassign
+                    value = null;
                   }
-                  this.setEditableValue(row, column, rowIndex, columnIndex, value, true, null)
+                  this.setEditableValue(row, column, rowIndex, columnIndex, value, true, null);
                 }
-              })
-            })
-            this.selEnd = [rowIndex, columnIndex]
+              });
+            });
+            this.selEnd = [rowIndex, columnIndex];
           }
-        }, 100)
+        }, 100);
       } else if (isControl && (key.toLowerCase() === 'c' || key.toLowerCase() === 'x')) {
-        if (isShift) $event.preventDefault()
-        this.copyToClipboard(isShift)
+        if (isShift) $event.preventDefault();
+        this.copyToClipboard(isShift);
       } else if (!$event.metaKey && this.selStart[0] >= 0 && isWriteableKey($event.keyCode)) {
-        const { colData, rowData, rowIndex, colIndex } = this.getCell()
-        $event.preventDefault()
-        this.tryEdit(rowData, colData, rowIndex, colIndex, $event.key)
+        const { colData, rowData, rowIndex, colIndex } = this.getCell();
+        $event.preventDefault();
+        this.tryEdit(rowData, colData, rowIndex, colIndex, $event.key);
       }
-    })
+    });
   },
-  mounted () {
-    checkFocus(this.$refs.container.querySelector('tbody'), focused => {
-      this.focused = focused
-    })
-    this.loadColumnsSizes()
-    const body = this.$refs.body
-    body.addEventListener('scroll', e => {
+  mounted() {
+    checkFocus(this.$refs.container.querySelector('tbody'), (focused) => {
+      this.focused = focused;
+    });
+    this.loadColumnsSizes();
+    const body = this.$refs.body;
+    body.addEventListener('scroll', (e) => {
       requestAnimationFrame(() => {
-        this.$refs.head.scrollLeft = e.target.scrollLeft
-      })
-      this.renderVisibleScroll(body)
-    })
-    this.renderVisibleScroll(body)
+        this.$refs.head.scrollLeft = e.target.scrollLeft;
+      });
+      this.renderVisibleScroll(body);
+    });
+    this.renderVisibleScroll(body);
   },
   watch: {
-    selStart (value, old) {
+    selStart(value, old) {
       if (value[0] !== old[0]) {
-        this.emitRowSelected()
+        this.emitRowSelected();
       }
     },
-    selEnd () {
-      this.emitRowSelected()
+    selEnd() {
+      this.emitRowSelected();
     },
-    rowDataPage () {
-      this.emitRowSelected()
+    rowDataPage() {
+      this.emitRowSelected();
     },
-    rowData () {
-      const [rowIndex] = this.selStart
-      const currentKey = this.rowDataPage[rowIndex] && this.rowDataPage[rowIndex][this.rowDataKey]
+    rowData() {
+      const [rowIndex] = this.selStart;
+      const currentKey = this.rowDataPage[rowIndex] && this.rowDataPage[rowIndex][this.rowDataKey];
       if (currentKey !== this.selectedRowKey) {
-        this.emitRowSelected()
+        this.emitRowSelected();
       }
-      this.renderVisibleScroll()
+      this.renderVisibleScroll();
     },
-    columnDefs () {
-      this.loadColumnsSizes()
-    }
+    columnDefs() {
+      this.loadColumnsSizes();
+    },
   },
   computed: {
-    rowDataFiltered () {
-      return filterAndSort(this.filter, this.rowData, this.columnDefs, this.sortByColumn, this.sortByDesc)
+    rowDataFiltered() {
+      return filterAndSort(
+        this.filter,
+        this.rowData,
+        this.columnDefs,
+        this.sortByColumn,
+        this.sortByDesc,
+      );
     },
-    rowDataPage () {
+    rowDataPage() {
       if (!this.pageCount) {
-        return this.rowDataFiltered
+        return this.rowDataFiltered;
       }
-      return this.rowDataFiltered.slice(this.page * this.pageCount, this.page * this.pageCount + this.pageCount)
+      return this.rowDataFiltered
+        .slice(this.page * this.pageCount, this.page * this.pageCount + this.pageCount);
     },
-    columnDefsFiltered () {
-      return this.columnDefs
+    columnDefsFiltered() {
+      return this.columnDefs;
     },
-    pages () {
+    pages() {
       return Math.ceil(this.rowDataFiltered.length / this.pageCount)
-    }
+    },
   },
   methods: {
+    addMultRows(val) {
+      this.$emit('add-multiple-rows', { rowsToAdd: val });
+    },
     testButton() {
-      console.log('test button');
       this.$emit('add-empty-row');
     },
-    emitRowSelected () {
+    emitRowSelected() {
       if ((this.selStart[0] === this.selEnd[0] && this.selStart[1] === this.selEnd[1])) {
-        const cell = this.getCell()
-        this.$emit('row-selected', cell)
+        const cell = this.getCell();
+        this.$emit('row-selected', cell);
       } else {
-        this.$emit('row-selected', { rowData: null })
+        this.$emit('row-selected', { rowData: null });
       }
     },
-    renderVisibleScroll (body) {
+    renderVisibleScroll(body) {
       if (!body) {
-        body = this.$refs.body
+        // eslint-disable-next-line no-param-reassign
+        body = this.$refs.body;
       }
-      const { itemHeight } = this
-      let offset = Math.floor(body.scrollTop / itemHeight)
+      const { itemHeight } = this;
+      let offset = Math.floor(body.scrollTop / itemHeight);
       if (offset < this.virtualScrollOffset) {
-        offset = 0
+        offset = 0;
       } else {
-        offset -= this.virtualScrollOffset
+        offset -= this.virtualScrollOffset;
       }
-      const visibleCount = Math.ceil(body.clientHeight / itemHeight) + 1 + this.virtualScrollOffset
-      this.offsetRows = offset
-      this.visibleRows = this.rowDataPage.slice(offset, offset + visibleCount)
+      const visibleCount = Math.ceil(body.clientHeight / itemHeight) + 1 + this.virtualScrollOffset;
+      this.offsetRows = offset;
+      this.visibleRows = this.rowDataPage.slice(offset, offset + visibleCount);
     },
-    filtersChanged () {
-      this.page = 0
-      this.renderVisibleScroll()
+    filtersChanged() {
+      this.page = 0;
+      this.renderVisibleScroll();
     },
-    getCell () {
-      const [rowIndex, colIndex] = this.selStart
-      return this.getCellByRef(rowIndex, colIndex)
+    getCell() {
+      const [rowIndex, colIndex] = this.selStart;
+      return this.getCellByRef(rowIndex, colIndex);
     },
-    getCellByRef (rowIndex, colIndex) {
-      const colData = this.columnDefs[colIndex]
-      const rowData = this.rowDataFiltered[rowIndex]
-      return { rowData, colData, rowIndex, colIndex }
+    getCellByRef(rowIndex, colIndex) {
+      const colData = this.columnDefs[colIndex];
+      const rowData = this.rowDataFiltered[rowIndex];
+      return {
+        rowData,
+        colData,
+        rowIndex,
+        colIndex,
+      };
     },
-    loadColumnsSizes () {
-      const columns = JSON.parse(localStorage.getItem(`${this.id}_columns`) || '[]')
-      this.columnDefs.forEach(column => {
-        const previousSize = columns.find(c => c.field === column.field)
-        column.size = (previousSize && previousSize.size) || column.size
-      })
-      this.setGridColumnTemplate()
+    loadColumnsSizes() {
+      const columns = JSON.parse(localStorage.getItem(`${this.id}_columns`) || '[]');
+      this.columnDefs.forEach((column) => {
+        const previousSize = columns.find((c) => c.field === column.field);
+        // eslint-disable-next-line no-param-reassign
+        column.size = (previousSize && previousSize.size) || column.size;
+      });
+      this.setGridColumnTemplate();
     },
-    async selectCell (rowIndex, colIndex, $event) {
+    async selectCell(rowIndex, colIndex, $event) {
+      console.log($event);
       if (changePending) {
-        return
+        return;
       }
-      if (this.cellEditing.length && this.cellEditing[0] === rowIndex && this.cellEditing[1] === colIndex) {
-        return
+      if (this.cellEditing.length
+        && this.cellEditing[0] === rowIndex
+        && this.cellEditing[1] === colIndex) {
+        return;
       }
-      const maxrow = this.rowDataFiltered.length - 1
-      const maxcol = this.columnDefs.length - 1
-      rowIndex = rowIndex < 0 ? 0 : rowIndex > maxrow ? maxrow : rowIndex
-      colIndex = colIndex < 0 ? 0 : colIndex > maxcol ? maxcol : colIndex
-      const shift = $event && $event.shiftKey
+      const maxrow = this.rowDataFiltered.length - 1;
+      const maxcol = this.columnDefs.length - 1;
+      rowIndex = rowIndex < 0 ? 0 : rowIndex > maxrow ? maxrow : rowIndex;
+      colIndex = colIndex < 0 ? 0 : colIndex > maxcol ? maxcol : colIndex;
+      const shift = $event && $event.shiftKey;
       if (shift) {
-        const rowRange = [this.selStart[0], rowIndex]
-        const colRange = [this.selStart[1], colIndex]
-        this.selStart = [Math.min(...rowRange), Math.min(...colRange)]
-        this.selEnd = [Math.max(...rowRange), Math.max(...colRange)]
+        const rowRange = [this.selStart[0], rowIndex];
+        const colRange = [this.selStart[1], colIndex];
+        this.selStart = [Math.min(...rowRange), Math.min(...colRange)];
+        this.selEnd = [Math.max(...rowRange), Math.max(...colRange)];
       } else {
-        this.selEnd = [rowIndex, colIndex]
-        this.selStart = [rowIndex, colIndex]
+        this.selEnd = [rowIndex, colIndex];
+        this.selStart = [rowIndex, colIndex];
       }
       if (this.cellEditing[0] !== rowIndex || this.cellEditing[1] !== colIndex) {
-        this.cellEditing = []
+        this.cellEditing = [];
       }
-      this.focus()
+      this.focus();
     },
-    focus () {
-      const [rowIndex, colIndex] = this.selStart
-      const body = this.$refs.body
-      const cell = body.querySelector(`#cell${rowIndex}-${colIndex}`)
+    focus() {
+      const [rowIndex, colIndex] = this.selStart;
+      const body = this.$refs.body;
+      const cell = body.querySelector(`#cell${rowIndex}-${colIndex}`);
       if (cell) {
-        const cellHPosition = cell.offsetLeft - body.scrollLeft
-        const cellVPosition = cell.getBoundingClientRect().top - body.getBoundingClientRect().top
+        const cellHPosition = cell.offsetLeft - body.scrollLeft;
+        const cellVPosition = cell.getBoundingClientRect().top - body.getBoundingClientRect().top;
         if (cellHPosition < 0) {
-          body.scrollLeft += cellHPosition
+          body.scrollLeft += cellHPosition;
         } else {
-          const cellRightPosition = cellHPosition + cell.clientWidth
+          const cellRightPosition = cellHPosition + cell.clientWidth;
           if (cellRightPosition > body.clientWidth) {
-            body.scrollLeft += cellRightPosition - body.clientWidth + 2
+            body.scrollLeft += cellRightPosition - body.clientWidth + 2;
           }
         }
         if (cellVPosition < 0) {
-          body.scrollTop += cellVPosition
+          body.scrollTop += cellVPosition;
         } else {
-          const cellBottomPosition = cellVPosition + cell.clientHeight
+          const cellBottomPosition = cellVPosition + cell.clientHeight;
           if (cellBottomPosition > body.clientHeight) {
-            body.scrollTop += cellBottomPosition - body.clientHeight + 2
+            body.scrollTop += cellBottomPosition - body.clientHeight + 2;
           }
         }
       } else if (rowIndex === 0) {
-        body.scrollTop = 0
+        body.scrollTop = 0;
       } else if (rowIndex === this.rowData.length - 1) {
-        body.scrollTop = this.rowDataPage.length * this.itemHeight
+        body.scrollTop = this.rowDataPage.length * this.itemHeight;
       }
     },
     tryEdit (row, column, rowIndex, columnIndex, newValue) {
       if (column.editable) {
-        this.cellEditing = [rowIndex, columnIndex, newValue]
+        this.cellEditing = [rowIndex, columnIndex, newValue];
       }
     },
-    linkClicked (rowData, colData, rowIndex, colIndex, newValue) {
-      this.$emit('link-clicked', { rowData, colData, rowIndex, colIndex })
+    linkClicked(rowData, colData, rowIndex, colIndex, newValue) {
+      this.$emit('link-clicked', { rowData, colData, rowIndex, colIndex });
     },
-    contextMenu (row, column, rowIndex, columnIndex, $event) {
-      this.isSelecting = false
-      const isInside = rowIndex >= this.selStart[0] && rowIndex <= this.selEnd[0] && columnIndex >= this.selStart[1] && columnIndex <= this.selEnd[1]
-      if (!isInside) this.selectCell(this.offsetRows + rowIndex, columnIndex, $event)
-      this.$emit('context-menu', { row, column, rowIndex, columnIndex, $event })
+    contextMenu(row, column, rowIndex, columnIndex, $event) {
+      this.isSelecting = false;
+      const isInside = rowIndex >= this.selStart[0] && rowIndex <= this.selEnd[0] && columnIndex >= this.selStart[1] && columnIndex <= this.selEnd[1];
+      console.log("ii")
+      if (!isInside) this.selectCell(this.offsetRows + rowIndex, columnIndex, $event);
+      this.$emit('context-menu', { row, column, rowIndex, columnIndex, $event });
     },
-    setCellError (rowIndex, columnIndex, error) {
-      const cellId = `cell${rowIndex}-${columnIndex}`
+    setCellError(rowIndex, columnIndex, error) {
+      const cellId = `cell${rowIndex}-${columnIndex}`;
       if (error) {
-        this.$set(this.cellsWithErrors, cellId, error)
+        this.$set(this.cellsWithErrors, cellId, error);
       } else {
-        this.$delete(this.cellsWithErrors, cellId)
+        this.$delete(this.cellsWithErrors, cellId);
       }
     },
-    cellEdited ({ row, column, rowIndex, columnIndex, value, $event, valueChanged }) {
-      this.setEditableValue(row, column, rowIndex, columnIndex, value, valueChanged, $event)
+    cellEdited({ row, column, rowIndex, columnIndex, value, $event, valueChanged }) {
+      this.setEditableValue(row, column, rowIndex, columnIndex, value, valueChanged, $event);
     },
-    setEditableValue (row, column, rowIndex, columnIndex, value, valueChanged, $event) {
-      return new Promise(resolve => {
+    setEditableValue(row, column, rowIndex, columnIndex, value, valueChanged, $event) {
+      return new Promise((resolve) => {
         if (!valueChanged) {
-          this.cellEditing = []
-          resolve()
-          return
+          this.cellEditing = [];
+          resolve();
+          return;
         }
-        const cellId = `cell${rowIndex}-${columnIndex}`
-        const input = document.querySelector(`#${cellId} input`)
-        const eventCode = $event && $event.code
-        let prevent = false
+        const cellId = `cell${rowIndex}-${columnIndex}`;
+        const input = document.querySelector(`#${cellId} input`);
+        const eventCode = $event && $event.code;
+        let prevent = false;
 
         const preventDefault = () => {
-          prevent = true
+          prevent = true;
           if (changePending) {
-            changePending = false
-            this.cellEditing = []
+            changePending = false;
+            this.cellEditing = [];
           }
-        }
+        };
         const markAsPending = () => {
-          changePending = true
+          changePending = true;
           if (input) {
-            input.disabled = true
+            input.disabled = true;
           }
-        }
+        };
         const confirm = () => {
-          if (prevent) return
-          changePending = false
-          row[column.field] = value
-          this.cellEditing = []
+          if (prevent) return;
+          changePending = false;
+          // eslint-disable-next-line no-param-reassign
+          row[column.field] = value;
+          this.cellEditing = [];
           if (eventCode === 'Enter') {
-            this.sumSelectionRow(1)
+            this.sumSelectionRow(1);
           }
-          resolve()
-        }
-        const markAsFailed = error => {
-          this.setCellError(rowIndex, columnIndex, error || 'Error in value or value format')
-        }
+          resolve();
+        };
+        const markAsFailed = (error) => {
+          this.setCellError(rowIndex, columnIndex, error || 'Error in value or value format');
+        };
         const markAsSuccess = () => {
-          this.setCellError(rowIndex, columnIndex, false)
-        }
+          this.setCellError(rowIndex, columnIndex, false);
+        };
 
-        this.$emit('cell-updated', { value, row, column, rowIndex, columnIndex, $event, preventDefault, markAsPending, confirm, markAsFailed, markAsSuccess })
+        this.$emit('cell-updated', { value, row, column, rowIndex, columnIndex, $event, preventDefault, markAsPending, confirm, markAsFailed, markAsSuccess });
         if (prevent) {
-          this.cellEditing = []
-          resolve()
+          this.cellEditing = [];
+          resolve();
         } else if (!changePending) {
-          confirm()
+          confirm();
         }
 
         if (eventCode === 'Tab') {
-          $event.preventDefault()
+          $event.preventDefault();
         }
-      })
+      });
     },
-    sort (column) {
+    sort(column) {
       if (column.sortable) {
         if (this.sortByColumn === column.field) {
-          this.sortByDesc = !this.sortByDesc
+          this.sortByDesc = !this.sortByDesc;
         }
-        this.sortByColumn = column.field
-        this.renderVisibleScroll()
+        this.sortByColumn = column.field;
+        this.renderVisibleScroll();
       }
     },
-    setGridColumnTemplate () {
+    setGridColumnTemplate() {
       this.gridTemplateColumns = this.columnDefsFiltered
         .map(({ size }) => size || 'minmax(130px, 1.67fr)')
-        .join(' ')
+        .join(' ');
     },
-    initResize (column, $event) {
+    initResize(column, $event) {
       initResize($event.target.parentNode, $event, width => {
-        column.size = Math.max(30, width) + 'px'
-        this.setGridColumnTemplate()
+        column.size = Math.max(30, width) + 'px';
+        this.setGridColumnTemplate();
       }, () => {
-        localStorage.setItem(`${this.idRowVEG}_columns`, JSON.stringify(this.columnDefsFiltered.map(({ field, size }) => ({ field, size }))))
-      })
+        localStorage.setItem(`${this.idRowVEG}_columns`, JSON.stringify(this.columnDefsFiltered.map(({ field, size }) => ({ field, size }))));
+      });
     },
-    selectFirstCol () {
-      this.selectCell(this.selStart[1], 0)
+    selectFirstCol() {
+      this.selectCell(this.selStart[1], 0);
     },
-    selectLastCol () {
-      this.selectCell(this.selStart[0], this.columnDefs.length - 1)
+    selectLastCol() {
+      this.selectCell(this.selStart[0], this.columnDefs.length - 1);
     },
-    selectFirstRow () {
-      this.selectCell(0, this.selStart[1])
+    selectFirstRow() {
+      this.selectCell(0, this.selStart[1]);
     },
-    selectLastRow () {
-      this.selectCell(this.rowData.length - 1, this.selStart[1])
+    selectLastRow() {
+      this.selectCell(this.rowData.length - 1, this.selStart[1]);
     },
-    sumSelectionCol (sum) {
-      let [row, col] = this.selStart
-      col += sum
-      if(col != 0){
-        this.selectCell(row, col)
+    sumSelectionCol(sum) {
+      let [row, col] = this.selStart;
+      col += sum;
+      if (col !== 0) {
+        this.selectCell(row, col);
       }
     },
-    sumSelectionRow (sum) {
-      let [row, col] = this.selStart
-      row += sum
-      this.selectCell(row, col)
+    sumSelectionRow(sum) {
+      if(sum == '1'){
+        const cell = this.getCell();
+        this.$emit('maybe-add-row', cell);
+      }
+      console.log(sum);
+      let [row, col] = this.selStart;
+      row += sum;
+      console.log('6')
+      this.selectCell(row, col);
     },
-    removeFilter (field) {
+    removeFilter(field) {
       if (field) {
-        this.$delete(this.filter, field)
+        this.$delete(this.filter, field);
       } else {
-        this.filter = {}
+        this.filter = {};
       }
-      this.renderVisibleScroll()
+      this.renderVisibleScroll();
     },
-    getFormattedRows () {
-      return this.rowData.map(row => {
+    getFormattedRows() {
+      return this.rowData.map((row) => {
         return this.columnDefs.reduce((rowFormatted, column) => {
           rowFormatted[column.field] = cellFormatter(row[column.field], column)
-          return rowFormatted
+          return rowFormatted;
         }, {})
-      })
+      });
     },
     startSelection (rowIndex, colIndex, e) {
       this.isSelecting = true
@@ -516,34 +553,34 @@ export default {
     onSelection (rowIndex, colIndex) {
       if (this.isSelecting) {
         if (rowIndex < this.selStartSelection[0]) {
-          this.selStart = colIndex < this.selStartSelection[1] ? [rowIndex, colIndex] : [rowIndex, this.selStartSelection[1]]
-          this.selEnd = colIndex < this.selStartSelection[1] ? this.selStartSelection : [this.selStartSelection[0], colIndex]
+          this.selStart = colIndex < this.selStartSelection[1] ? [rowIndex, colIndex] : [rowIndex, this.selStartSelection[1]];
+          this.selEnd = colIndex < this.selStartSelection[1] ? this.selStartSelection : [this.selStartSelection[0], colIndex];
         } else {
-          this.selStart = colIndex < this.selStartSelection[1] ? [this.selStartSelection[0], colIndex] : this.selStartSelection
-          this.selEnd = colIndex < this.selStartSelection[1] ? [rowIndex, this.selStartSelection[1]] : [rowIndex, colIndex]
+          this.selStart = colIndex < this.selStartSelection[1] ? [this.selStartSelection[0], colIndex] : this.selStartSelection;
+          this.selEnd = colIndex < this.selStartSelection[1] ? [rowIndex, this.selStartSelection[1]] : [rowIndex, colIndex];
         }
       }
     },
-    stopSelection () {
-      this.isSelecting = false
+    stopSelection() {
+      this.isSelecting = false;
     },
-    copyToClipboard (withHeaders) {
-      const [rowStart, columnStart] = this.selStart
-      const [rowEnd, columnEnd] = this.selEnd
-      let value = withHeaders ? this.columnDefs.filter((_, index) => index >= columnStart && index <= columnEnd).map(col => col.headerName).join('\t') + '\n' : ''
+    copyToClipboard(withHeaders) {
+      const [rowStart, columnStart] = this.selStart;
+      const [rowEnd, columnEnd] = this.selEnd;
+      let value = withHeaders ? this.columnDefs.filter((_, index) => index >= columnStart && index <= columnEnd).map(col => col.headerName).join('\t') + '\n' : '';
       for (let row = rowStart; row <= rowEnd; row++) {
         for (let column = columnStart; column <= columnEnd; column++) {
-          const { colData, rowData } = this.getCellByRef(row, column)
-          const cellValue = cellFormatter(rowData[colData.field], colData, rowData)
-          value = column === columnEnd ? `${value}${cellValue}\n` : `${value}${cellValue}\t`
+          const { colData, rowData } = this.getCellByRef(row, column);
+          const cellValue = cellFormatter(rowData[colData.field], colData, rowData);
+          value = column === columnEnd ? `${value}${cellValue}\n` : `${value}${cellValue}\t`;
         }
       }
-      this.$refs.tmp.value = value || ''
-      this.$refs.tmp.select()
-      document.execCommand('copy')
-    }
-  }
-}
+      this.$refs.tmp.value = value || '';
+      this.$refs.tmp.select();
+      document.execCommand('copy');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -727,7 +764,8 @@ th {
 }
 
 .resize-handle:hover,
-/* The following selector is needed so the handle is visible during resize even if the mouse isn't over the handle anymore */
+/* The following selector is needed so the handle is visible during
+resize even if the mouse isn't over the handle anymore */
 .header--being-resized .resize-handle {
   opacity: 0.5;
 }

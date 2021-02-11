@@ -8,28 +8,29 @@
 export default {
   props: {
     filters: { type: Object },
-    columnDefs: { type: Array }
+    columnDefs: { type: Array },
   },
   computed: {
-    colNames () {
+    colNames() {
       return this.columnDefs.reduce((memo, column) => {
-        memo[column.field] = column.headerName
-        return memo
-      }, {})
+        // eslint-disable-next-line no-param-reassign
+        memo[column.field] = column.headerName;
+        return memo;
+      }, {});
     },
-    filtersLength () {
-      return this.fieldsWithData.length
+    filtersLength() {
+      return this.fieldsWithData.length;
     },
-    fieldsWithData () {
-      return Object.keys(this.filters).filter(field => this.filters[field])
-    }
+    fieldsWithData() {
+      return Object.keys(this.filters).filter((field) => this.filters[field]);
+    },
   },
   methods: {
-    remove (field) {
-      this.$emit('remove', field)
-    }
-  }
-}
+    remove(field) {
+      this.$emit('remove', field);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

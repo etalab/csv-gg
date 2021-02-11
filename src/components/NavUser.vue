@@ -23,35 +23,37 @@
 </template>
 
 <script>
-import Auth from '@/services/Auth'
-const $auth = new Auth()
+import Auth from '../services/Auth';
+
+const $auth = new Auth();
+
 export default {
-  created: function(){
+  created() {
     this.getUserConnections();
   },
   computed: {
     user() {
-      return this.$store.state.auth.user
-    }
+      return this.$store.state.auth.user;
+    },
   },
   methods: {
-    getUserConnections(){
+    getUserConnections() {
     },
     submitLogin(evt) {
-      evt.preventDefault()
-      window.location = $auth.authUrl()
+      evt.preventDefault();
+      window.location = $auth.authUrl();
     },
     async logout() {
-      await $auth.proceedLogout(this.$store.state.auth.user.token)
-      this.$store.dispatch('auth/logout')
-    }
+      await $auth.proceedLogout(this.$store.state.auth.user.token);
+      this.$store.dispatch('auth/logout');
+    },
   },
   mounted() {
     this.polling = setInterval(() => {
       if (this.$store.state.auth.user.token !== '') {
-        this.$store.dispatch('auth/checkToken')
+        this.$store.dispatch('auth/checkToken');
       }
-    }, 3000)
-  }
-}
+    }, 3000);
+  },
+};
 </script>

@@ -2,7 +2,7 @@
 
 td.cell.noselectx(
   :id='`cell${rowIndex}-${columnIndex}`'
-  :class='{ selected: !onlyBorder && selected, "selected-top": selectedTop, "selected-right": selectedRight, "selected-bottom": selectedBottom, "selected-left": selectedLeft, editable, invalid, [column.type || "text"]: true }'
+  :class='{ selected: !onlyBorder && selected,  "selected-top": selectedTop, "selected-right": selectedRight, "selected-bottom": selectedBottom, "selected-left": selectedLeft, editable, invalid, [column.type || "text"]: true }'
   :title='invalid'
   :style='cellStyle'
   @click='$emit("click", $event)'
@@ -13,7 +13,7 @@ td.cell.noselectx(
   @mouseup='$emit("mouseup", $event)'
   @mouseenter='$emit("mouseenter",$event)'
 )
-  span(v-if='column.type === "supp"') 
+  span(v-if='column.type === "supp"')
     img(src='../static/images/remove.png',width="30px",height="30px")
   span.editable-field(v-if='cellEditing[0] === rowIndex && cellEditing[1] === columnIndex')
     input(
@@ -26,20 +26,24 @@ td.cell.noselectx(
       @blur='leaved'
     )
   span.cell-content(v-else)
-    a(@click.prevent='linkClicked' v-if='column.type === "link"' href='#') {{ row[column.field] | cellFormatter(column, row) }}
+    a(
+      @click.prevent='linkClicked'
+      v-if='column.type === "link"'
+      href='#'
+    ) {{ row[column.field] | cellFormatter(column, row) }}
     span(v-else) {{ row[column.field] | cellFormatter(column, row) }}
-  
 </template>
 
 <script>
-import Vue from 'vue'
-import { format } from 'date-fns'
-import { cellValueParser, sameDates } from './helpers'
-import { cellFormatter } from './vue-filters.js'
+import Vue from 'vue';
+import { format } from 'date-fns';
+import { cellValueParser, sameDates } from './helpers';
+// eslint-disable-next-line import/extensions
+import { cellFormatter } from './vue-filters.js';
 
 export default {
   filters: {
-    cellFormatter
+    cellFormatter,
   },
   props: {
     column: { type: Object },
@@ -50,113 +54,127 @@ export default {
     selEnd: { type: Array },
     cellEditing: { type: Array },
     cellsWithErrors: { type: Object },
-    onlyBorder: { type: Boolean }
+    onlyBorder: { type: Boolean },
   },
-  data () {
-    return { value: null, rowValue: null, editPending: false }
+  data() {
+    return { value: null, rowValue: null, editPending: false };
   },
   computed: {
-    selected () {
-      return this.rowIndex >= this.selStart[0] && this.rowIndex <= this.selEnd[0] && this.columnIndex >= this.selStart[1] && this.columnIndex <= this.selEnd[1]
+    selected() {
+      return this.rowIndex >= this.selStart[0]
+        && this.rowIndex <= this.selEnd[0]
+        && this.columnIndex >= this.selStart[1]
+        && this.columnIndex <= this.selEnd[1];
     },
-    selectedTop () {
-      return this.rowIndex === this.selStart[0] && this.columnIndex >= this.selStart[1] && this.columnIndex <= this.selEnd[1]
+    selectedTop() {
+      return this.rowIndex === this.selStart[0]
+        && this.columnIndex >= this.selStart[1]
+        && this.columnIndex <= this.selEnd[1];
     },
-    selectedRight () {
-      return this.columnIndex === this.selEnd[1] && this.rowIndex >= this.selStart[0] && this.rowIndex <= this.selEnd[0]
+    selectedRight() {
+      return this.columnIndex === this.selEnd[1]
+        && this.rowIndex >= this.selStart[0]
+        && this.rowIndex <= this.selEnd[0];
     },
-    selectedBottom () {
-      return this.rowIndex === this.selEnd[0] && this.columnIndex >= this.selStart[1] && this.columnIndex <= this.selEnd[1]
+    selectedBottom() {
+      return this.rowIndex === this.selEnd[0]
+        && this.columnIndex >= this.selStart[1]
+        && this.columnIndex <= this.selEnd[1];
     },
-    selectedLeft () {
-      return this.columnIndex === this.selStart[1] && this.rowIndex >= this.selStart[0] && this.rowIndex <= this.selEnd[0]
+    selectedLeft() {
+      return this.columnIndex === this.selStart[1]
+        && this.rowIndex >= this.selStart[0]
+        && this.rowIndex <= this.selEnd[0];
     },
-    editable () {
-      return this.cellEditing[0] === this.rowIndex && this.cellEditing[1] === this.columnIndex
+    editable() {
+      return this.cellEditing[0] === this.rowIndex
+        && this.cellEditing[1] === this.columnIndex;
     },
-    invalid () {
-      return this.cellsWithErrors[`cell${this.rowIndex}-${this.columnIndex}`]
+    invalid() {
+      return this.cellsWithErrors[`cell${this.rowIndex}-${this.columnIndex}`];
     },
-    inputType () {
+    inputType() {
       switch (this.column.type) {
-        case 'text': return 'text'
-        case 'link': return 'text'
-        case 'numeric': return 'number'
-        case 'currency': return 'number'
-        case 'percent': return 'number'
-        case 'date': return 'date'
-        case 'datetime': return 'datetime-local'
+        case 'text': return 'text';
+        case 'link': return 'text';
+        case 'numeric': return 'number';
+        case 'currency': return 'number';
+        case 'percent': return 'number';
+        case 'date': return 'date';
+        case 'datetime': return 'datetime-local';
+        default: return 'text';
       }
-      return 'text'
     },
-    cellStyle () {
-      const cellStyle = this.row.$cellStyle && this.row.$cellStyle[this.column.field]
-      return { ...this.row.$rowStyle, ...cellStyle }
-    }
+    cellStyle() {
+      const cellStyle = this.row.$cellStyle
+        && this.row.$cellStyle[this.column.field];
+      return { ...this.row.$rowStyle, ...cellStyle };
+    },
   },
   watch: {
-    cellEditing () {
+    cellEditing() {
       if (this.cellEditing[0] === this.rowIndex && this.cellEditing[1] === this.columnIndex) {
-        this.rowValue = this.getEditableValue(this.row[this.column.field])
-        this.value = this.getEditableValue(this.cellEditing[2] || this.row[this.column.field])
+        this.rowValue = this.getEditableValue(this.row[this.column.field]);
+        this.value = this.getEditableValue(this.cellEditing[2] || this.row[this.column.field]);
 
         Vue.nextTick(() => {
-          const input = this.$refs.input
+          const input = this.$refs.input;
           if (!this.value && this.value !== 0 && this.value !== false) {
-            input.value = null
-            input.focus()
-            return
+            input.value = null;
+            input.focus();
+            return;
           }
           if (this.column.type === 'datetime' || this.column.type === 'date') {
             const formattedDate = this.column.type === 'datetime'
               ? `${format(this.value, 'yyyy-MM-dd')}T${format(this.value, 'HH:mm')}`
-              : `${format(this.value, 'yyyy-MM-dd')}`
+              : `${format(this.value, 'yyyy-MM-dd')}`;
             setTimeout(() => {
-              input.value = formattedDate
-              input.focus()
-            }, 50)
+              input.value = formattedDate;
+              input.focus();
+            }, 50);
           } else {
-            input.value = this.value
-            input.focus()
+            input.value = this.value;
+            input.focus();
           }
-        })
+        });
       }
-    }
+    },
   },
   methods: {
-    getEditableValue (value) {
+    getEditableValue(value) {
       if (this.column.type === 'datetime' || this.column.type === 'date') {
         if (typeof value === 'string') {
-          const parsedDate = new Date(value)
-          return isNaN(parsedDate) ? null : parsedDate
+          const parsedDate = new Date(value);
+          // eslint-disable-next-line no-restricted-globals
+          return isNaN(parsedDate) ? null : parsedDate;
         }
       }
-      return value
+      return value;
     },
-    setEditableValue ($event) {
-      const value = cellValueParser(this.column, this.row, this.$refs.input.value, true)
-      this.editPending = false
-      let valueChanged = true
-      if (value === this.rowValue) valueChanged = false
+    setEditableValue($event) {
+      const value = cellValueParser(this.column, this.row, this.$refs.input.value, true);
+      this.editPending = false;
+      let valueChanged = true;
+      if (value === this.rowValue) valueChanged = false;
       else if (value && (this.column.type === 'date' || this.column.type === 'datetime')) {
-        if (sameDates(value, this.rowValue)) valueChanged = false
+        if (sameDates(value, this.rowValue)) valueChanged = false;
       }
-      const { row, column, rowIndex, columnIndex } = this
-      this.$emit('edited', { row, column, rowIndex, columnIndex, $event, value, valueChanged })
+      const { row, column, rowIndex, columnIndex } = this;
+      this.$emit('edited', { row, column, rowIndex, columnIndex, $event, value, valueChanged });
     },
-    editCancelled () {
-      this.$emit('edit-cancelled')
+    editCancelled() {
+      this.$emit('edit-cancelled');
     },
-    leaved ($event) {
+    leaved($event) {
       if (this.editPending) {
-        this.setEditableValue($event)
+        this.setEditableValue($event);
       }
     },
-    linkClicked () {
-      this.$emit('link-clicked')
-    }
-  }
-}
+    linkClicked() {
+      this.$emit('link-clicked');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -251,6 +269,7 @@ export default {
   -khtml-user-select: none; /* Konqueror HTML */
   -moz-user-select: none; /* Old versions of Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+  user-select: none; /* Non-prefixed version,
+  currently supported by Chrome, Edge, Opera and Firefox */
 }
 </style>

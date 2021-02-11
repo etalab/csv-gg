@@ -29,7 +29,6 @@
         label-for="input-org"
         description="Choisissez l'organisation dans laquelle sera créé le jeu de données"
       >
-
         <template v-slot:label>
           Organisation <span class="text-danger">*</span>
         </template>
@@ -40,8 +39,7 @@
             v-on:change="onChange"
             required
           ></b-form-select>
-        </b-form-group>
-
+      </b-form-group>
 
       <div v-if="jddShow" class="radio-boxes">
         <div class="radio-box">
@@ -61,7 +59,6 @@
         </div><span class="text-danger">*</span>
       </div>
 
-
       <!-- existing Dataset -->
       <b-form-group
         v-if="jddShow && editJDDShow && selectMe"
@@ -77,11 +74,11 @@
           v-model="form.existingDataset"
           v-on:change="onChangeJDDMe"
         >
-          <option v-for="ds in datasetsMe" :value="ds.id" >{{ ds.title }}</option>
+          <option v-for="ds in datasetsMe" v-bind:key="ds.id" :value="ds.id" >
+            {{ ds.title }}
+          </option>
         </b-form-select>
       </b-form-group>
-
-
 
       <!-- existing Dataset -->
       <b-form-group
@@ -98,10 +95,11 @@
           v-model="form.existingDataset"
           v-on:change="onChangeJDDOrg"
         >
-          <option v-for="ds in datasetsOrg" :value="ds.id" >{{ ds.title }}</option>
+          <option v-for="ds in datasetsOrg"  v-bind:key="ds.id" :value="ds.id">
+            {{ ds.title }}
+          </option>
         </b-form-select>
       </b-form-group>
-
 
       <!-- Dataset title -->
       <b-form-group
@@ -138,9 +136,6 @@
         ></b-form-textarea>
       </b-form-group>
 
-
-
-
       <div v-if="jddShow && editJDDShow && this.form.existingDataset != ''" class="radio-boxes">
         <div class="radio-box">
           <p style="line-height: 50px;">Ressource :</p>
@@ -159,7 +154,6 @@
         </div><span class="text-danger">*</span>
       </div>
 
-
       <!-- existing resource -->
       <b-form-group
         v-if="jddShow && editJDDShow && editResShow"
@@ -174,7 +168,9 @@
           id="input-editres"
           v-model="form.existingResource"
         >
-          <option v-for="res in resources" :value="res.id" >{{ res.title }}</option>
+          <option v-for="res in resources"  v-bind:key="res.id" :value="res.id" >
+            {{ res.title }}
+          </option>
         </b-form-select>
       </b-form-group>
 
@@ -203,7 +199,7 @@
   </div>
 </template>
 <script>
-import $api from '@/services/Api'
+import $api from '../services/Api';
 
 export default {
   props: {
@@ -212,8 +208,8 @@ export default {
     publicationIntro: String,
     value: {
       type: undefined,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
@@ -221,13 +217,13 @@ export default {
         org: '',
         dataset: {
           title: '',
-          description: ''
+          description: '',
         },
         resource: {
-          title: ''
+          title: '',
         },
         existingDataset: '',
-        existingResource: ''
+        existingResource: '',
       },
       whoPicked: '',
       typePicked: '',
@@ -243,162 +239,162 @@ export default {
       selectOrg: false,
       datasetsOrg: [],
       resources: [],
-      editResShow: false
-    }
+      editResShow: false,
+    };
   },
   mounted() {
-    this.$emit('form-state-change', this.okState)
+    this.$emit('form-state-change', this.okState);
   },
   computed: {
     okState() {
       return (
-        this.form.org != '' &&
-        (this.form.dataset.title !== '' || this.form.existingDataset !== '') &&
-        this.form.dataset.description !== '' &&
-        this.form.resource.title !== ''
-      )
+        this.form.org !== ''
+        && (this.form.dataset.title !== '' || this.form.existingDataset !== '')
+        && this.form.dataset.description !== ''
+        && this.form.resource.title !== ''
+      );
     },
     payload() {
       return {
         organizationId: this.form.org,
         dataset: {
           title: this.form.dataset.title,
-          description: this.form.dataset.description
+          description: this.form.dataset.description,
         },
         resource: {
           title: this.form.resource.title,
-          schemaName: this.schemaName
+          schemaName: this.schemaName,
         },
         existingDataset: this.form.existingDataset,
-        existingResource: this.form.existingResource
-      }
-    }
+        existingResource: this.form.existingResource,
+      };
+    },
   },
   methods: {
     onChange() {
-      const okState = this.okState
-      if(this.form.org != ""){
+      // eslint-disable-next-line prefer-destructuring
+      const okState = this.okState;
+      if (this.form.org !== '') {
         this.jddShow = true;
       }
-      this.$emit('form-state-change', okState)
+      this.$emit('form-state-change', okState);
       if (okState) {
-        this.$emit('input', this.payload)
+        this.$emit('input', this.payload);
       }
     },
-    onChangeJDDMe(){
-        this.datasetsMe.forEach(ds => {
-        if(ds.id === this.form.existingDataset){
-          this.form.dataset.title = ds.title
-          this.form.dataset.description = ds.description
-          this.resources = ds.resources
-          this.typeResPicked = ''
-          this.form.resource.title = ''
-          this.form.existingResource = ''
-          this.editResShow = false
+    onChangeJDDMe() {
+      this.datasetsMe.forEach((ds) => {
+        if (ds.id === this.form.existingDataset) {
+          this.form.dataset.title = ds.title;
+          this.form.dataset.description = ds.description;
+          this.resources = ds.resources;
+          this.typeResPicked = '';
+          this.form.resource.title = '';
+          this.form.existingResource = '';
+          this.editResShow = false;
         }
-      })
+      });
     },
-    onChangeJDDOrg(){
-        this.datasetsOrg.forEach(ds => {
-        if(ds.id === this.form.existingDataset){
-          this.form.dataset.title = ds.title
-          this.form.dataset.description = ds.description
-          this.resources = ds.resources
-          this.typeResPicked = ''
-          this.form.resource.title = ''
-          this.form.existingResource = ''
-          this.editResShow = false
+    onChangeJDDOrg() {
+      this.datasetsOrg.forEach((ds) => {
+        if (ds.id === this.form.existingDataset) {
+          this.form.dataset.title = ds.title;
+          this.form.dataset.description = ds.description;
+          this.resources = ds.resources;
+          this.typeResPicked = '';
+          this.form.resource.title = '';
+          this.form.existingResource = '';
+          this.editResShow = false;
         }
-      })
+      });
     },
-    radioclick(who){
-      this.form.org = ''
-      this.form.dataset.title = ''
-      this.form.dataset.description = ''
-      this.form.resource.title = ''
-      this.form.existingDataset = ''
-      this.editJDDShow = false
-      this.newJDDShow = false
-      this.typePicked = ''
+    radioclick(who) {
+      this.form.org = '';
+      this.form.dataset.title = '';
+      this.form.dataset.description = '';
+      this.form.resource.title = '';
+      this.form.existingDataset = '';
+      this.editJDDShow = false;
+      this.newJDDShow = false;
+      this.typePicked = '';
       this.onChange();
-      
-      if(who == "me"){
+
+      if (who === 'me') {
         this.orgaShow = false;
         this.jddShow = true;
-        this.form.org = "me";
+        this.form.org = 'me';
         this.selectMe = true;
         this.selectOrg = false;
       }
-      if(who == "org"){
+      if (who === 'org') {
         this.orgaShow = true;
         this.jddShow = false;
         this.selectMe = false;
         this.selectOrg = true;
       }
     },
-    radioclickJDD(type){
-      this.form.dataset.title = ''
-      this.form.dataset.description = ''
-      this.form.resource.title = ''
-      this.form.existingDataset = ''
-      this.form.resource.title = ''
-      this.typeResPicked = ''
-      this.form.existingResource = ''
-      this.editResShow = false
-      if(type == "existing"){
-        this.newJDDShow = false
-        this.editJDDShow = true
-        if(this.orgaShow){
-          this.getMyDatasetsOrg()
-        }else{
-          this.getMyDatasetsMe()
+    radioclickJDD(type) {
+      this.form.dataset.title = '';
+      this.form.dataset.description = '';
+      this.form.resource.title = '';
+      this.form.existingDataset = '';
+      this.form.resource.title = '';
+      this.typeResPicked = '';
+      this.form.existingResource = '';
+      this.editResShow = false;
+      if (type === 'existing') {
+        this.newJDDShow = false;
+        this.editJDDShow = true;
+        if (this.orgaShow) {
+          this.getMyDatasetsOrg();
+        } else {
+          this.getMyDatasetsMe();
         }
-      }else{
-        this.newJDDShow = true
-        this.editJDDShow = false
-        this.datasetsMe = []
+      } else {
+        this.newJDDShow = true;
+        this.editJDDShow = false;
+        this.datasetsMe = [];
       }
     },
-    radioclickRes(type){
-      this.form.resource.title = ''
-      this.typeResPicked = ''
-      this.form.existingResource = ''
-       if(type == "existing"){
-         this.editResShow = true
-       }else{
-         this.editResShow = false
-       }
-      this.onChange()
+    radioclickRes(type) {
+      this.form.resource.title = '';
+      this.typeResPicked = '';
+      this.form.existingResource = '';
+      if (type === 'existing') {
+        this.editResShow = true;
+      } else {
+        this.editResShow = false;
+      }
+      this.onChange();
     },
-    getMyDatasetsMe(){
+    getMyDatasetsMe() {
       $api
         .get(
           'me/datasets',
           {},
-          err => {
-            alert(`Erreur lors de la publication du jeu de données : ${err}`)
-          }
+          (err) => {
+            // eslint-disable-next-line no-alert
+            alert(`Erreur lors de la publication du jeu de données : ${err}`);
+          },
         )
-        .then(response => {
-          this.datasetsMe = response.data
-        })
+        .then((response) => {
+          this.datasetsMe = response.data;
+        });
     },
-    getMyDatasetsOrg(){
+    getMyDatasetsOrg() {
       $api
         .get(
-          'organizations/'+this.form.org+'/datasets',
+          `organizations/${this.form.org}/datasets`,
           {},
-          err => {
-            alert(`Erreur lors de la publication du jeu de données : ${err}`)
-          }
+          (err) => {
+            // eslint-disable-next-line no-alert
+            alert(`Erreur lors de la publication du jeu de données : ${err}`);
+          },
         )
-        .then(response => {
-          console.log(response)
-          this.datasetsOrg = response.data.data
-        })
+        .then((response) => {
+          this.datasetsOrg = response.data.data;
+        });
     },
-
-
-  }
-}
+  },
+};
 </script>

@@ -20,25 +20,25 @@ export default {
     page: { type: Number, required: true },
     pages: { type: Number, required: true },
     pageCount: { type: Number, required: true },
-    totalRows: { type: Number, required: true }
+    totalRows: { type: Number, required: true },
   },
-  data () {
-    return { count: this.pageCount }
+  data() {
+    return { count: this.pageCount };
   },
   watch: {
-    count () {
-      this.$emit('count-changed', this.count)
-    }
+    count() {
+      this.$emit('count-changed', this.count);
+    },
   },
   methods: {
-    prev () {
-      this.$emit('prev')
+    prev() {
+      this.$emit('prev');
     },
-    next () {
-      this.$emit('next')
-    }
-  }
-}
+    next() {
+      this.$emit('next');
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

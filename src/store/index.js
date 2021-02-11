@@ -1,22 +1,23 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-import auth from '@/store/modules/auth'
+// eslint-disable-next-line import/no-cycle
+import auth from './modules/auth';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   strict: true,
   modules: {
-    auth
+    auth,
   },
   mutations: {
-    initialiseStore (state) {
+    initialiseStore(state) {
       if (localStorage.getItem('store')) {
         this.replaceState(
-          Object.assign(state, JSON.parse(localStorage.getItem('store')))
-        )
+          Object.assign(state, JSON.parse(localStorage.getItem('store'))),
+        );
       }
-    }
-  }
-})
+    },
+  },
+});

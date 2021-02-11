@@ -44,7 +44,9 @@
             <div class="rf-footer__bottom">
             <ul class="rf-footer__bottom-list">
                 <li class="rf-footer__bottom-item">
-                <a class="rf-footer__bottom-link" href="/mentions-legales#accessibilite">Accessibilité: non conforme</a>
+                <a class="rf-footer__bottom-link" href="/mentions-legales#accessibilite">
+                    Accessibilité: non conforme
+                </a>
                 </li>
                 <li class="rf-footer__bottom-item">
                 <a class="rf-footer__bottom-link" href="/mentions-legales">Mentions légales</a>

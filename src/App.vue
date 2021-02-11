@@ -11,13 +11,12 @@
 </style>
 
 <script>
-import HeaderComponent from './views/HeaderComponent.vue'
-import FooterComponent from './views/FooterComponent.vue'
-
+import HeaderComponent from './views/HeaderComponent.vue';
+import FooterComponent from './views/FooterComponent.vue';
 
 export default {
   name: 'home',
-  components: {HeaderComponent,FooterComponent}
-}
+  components: { HeaderComponent, FooterComponent },
+};
 
 </script>
