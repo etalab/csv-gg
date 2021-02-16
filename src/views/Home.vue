@@ -50,7 +50,13 @@ export default {
       fetch(`${SCHEMAS_CATALOG_URL}`).then(r => {
           return r.json()
       }).then(data => {
-          this.schemas = data.schemas
+          let tableschemas = [];
+          data.schemas.forEach((schema) => {
+            if(schema.schema_type == 'tableschema') {
+              tableschemas.push(schema);
+            }
+          });
+          this.schemas = tableschemas;
           this.options = this.schemas.map(s => {
               return {value: s.name, text: s.title || s.name}
           })
