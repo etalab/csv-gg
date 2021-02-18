@@ -4,7 +4,7 @@
         label-cols-lg="3"
         :label="field.name"
         :label-for="`field-${field.name}`"
-        :invalid-feedback="error.content"
+        :invalid-feedback="errorMessage"
         valid-feedback="Ce champ est valide"
         :state="isValid"
         :label-class="{'required': isRequired}"
@@ -26,6 +26,16 @@ export default {
     mixins: [ValidateField],
     components: {
         VueMarkdown
+    },
+    computed: {
+        errorMessage() {
+            // Test order matters.
+            // legacy report error contains 'content' (fr) and 'message' (en) properties
+            // New validation report only contains 'message' (fr) property
+            return this.error.content
+             ? this.error.content // legacy validation report
+             : this.error.message // new validation report
+        }
     }
 }
 </script>

@@ -188,7 +188,9 @@ export default {
           return factory(StringField, field)
       },
       dispatchError(error) {
-          let index = error['column-number']
+          let index = error.fieldNumber
+            ? error.fieldNumber // new validation report
+            : error['column-number'] // legacy validation report
           this.faultyFields.push(this.fieldNames[index-1])
           EventBus.$emit('field-error', this.fieldNames[index-1], error)
       },
@@ -215,7 +217,9 @@ export default {
           .then(data => {
               this.formValidated = true
               this.faultyFields = []
-              const errors = data.report.tables[0].errors
+              const errors = data.report.tasks
+                ? data.report.tasks[0].errors   // new validation report
+                : data.report.tables[0].errors  // legacy validation report
               if (errors && errors.length > 0) {
                   errors.forEach((error) => {
                       this.dispatchError(error)
