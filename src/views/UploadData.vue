@@ -123,7 +123,7 @@
           ref="modal1"
           id="modal1"
           hide-footer
-          title="Attention, vous n'êtes pas connectés"
+          title="Attention, vous n'êtes pas connecté"
         >
           <div>
             <p>Pour publier vos données sur datagouv, il est nécessaire de vous connecter.</p>
@@ -161,18 +161,18 @@ import {
 
 import PublishFormUpload from '../components/PublishFormUpload.vue';
 import NavUser from '../components/NavUser.vue';
-import $api from '../services/Api';
+
+import PublishRessources from '../mixins/PublishResources.vue';
 
 const lkInvalide = require('../static/images/badge-invalide.svg');
 const lkPartiellementValide = require('../static/images/badge-partiellement-valide.svg');
 const lkValide = require('../static/images/badge-valide.svg');
 
-const SCHEMAS_CATALOG_URL = process.env.VUE_APP_SCHEMAS_CATALOG_URL;
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL;
-const DGV_BASE_URL = process.env.VUE_APP_DATAGOUV_API_URL;
 
 export default {
   name: 'uploaddata',
+  mixins: [PublishRessources],
   components: {
     VsaList,
     VsaItem,
@@ -184,8 +184,6 @@ export default {
   },
   data() {
     return {
-      schemaName: this.$route.query.schema,
-      schemas: null,
       schemaObject: null,
       file: '',
       report: null,
@@ -198,8 +196,6 @@ export default {
       publication: false,
       publicationMessage: null,
       publicationReady: false,
-      publicationIntro: 'Publiez le fichier CSV uploadé dans un nouveau jeu de données',
-      publishButtonDisabled: true,
       dataToPublish: {},
       publicationOK: false,
       linkDgv: '',
@@ -211,35 +207,6 @@ export default {
       if (!this.schemas) return;
       // eslint-disable-next-line consistent-return
       return this.schemas.find((s) => s.name === this.schemaName);
-    },
-    user() {
-      return this.$store.state.auth.user;
-    },
-    userLoggedIn() {
-      return this.user && this.user.loggedIn;
-    },
-    userLoggedInWithSomeOrganizations() {
-      return this.userLoggedIn && this.user.data.organizations.length > 0;
-    },
-    publishButtonTitle() {
-      if (!this.userLoggedIn) {
-        return 'Connectez-vous pour publier une ressource';
-      }
-      if (this.user.data.organizations.length === 0) {
-        return 'Inscrivez-vous à une organisation pour publier une ressource';
-      }
-      return 'Publier le jeu de données';
-    },
-    userOrganizations() {
-      return this.userLoggedIn
-        ? this.user.data.organizations
-          .slice(0)
-          .sort((a, b) => a.name > b.name)
-          .map((org) => ({
-            value: org.id,
-            text: org.name,
-          }))
-        : [];
     },
   },
   watch: {
@@ -311,193 +278,6 @@ export default {
     publicationForm() {
       this.publicationReady = true;
     },
-    togglePublishButtonState(formState) {
-      this.publishButtonDisabled = !formState;
-    },
-    updateDatasetUpdateResource(publishContent) {
-      $api
-        .put(
-          `datasets/${publishContent.existingDataset}`,
-          {
-            title: publishContent.dataset.title,
-            description: publishContent.dataset.description,
-          },
-          (err) => {
-            // eslint-disable-next-line no-alert
-            alert(`Erreur lors de la publication du jeu de données : ${err}`);
-          },
-        )
-        .then((response) => {
-          // new dataset identifier
-          const datasetId = response.data.id;
-          // Prepare resource file to upload
-          const formData = new FormData();
-          formData.append('file', this.file, 'data.csv');
-          // Resource upload
-          $api
-            .post(
-              `datasets/${datasetId}/resources/${publishContent.existingResource}/upload`,
-              formData,
-              (err) => {
-                // eslint-disable-next-line
-                console.log(
-                  `Erreur lors du téléversement de la ressource : ${err}`,
-                );
-              },
-              { 'Content-Type': 'multipart/form-data' },
-            )
-            // eslint-disable-next-line no-shadow
-            .then((response) => {
-              // New resource identifier
-              const resourceId = response.data.id;
-              const payload = {
-                title: publishContent.resource.title,
-                schema: this.schemaName,
-              };
-              $api
-                .put(
-                  `datasets/${datasetId}/resources/${resourceId}/`,
-                  payload,
-                  (err) => {
-                    // eslint-disable-next-line no-alert
-                    alert(
-                      `Erreur lors de la mise à jour de la ressource : ${err}`,
-                    );
-                  },
-                )
-                .then(() => {
-                  this.publicationOK = true;
-                  this.linkDgv = `${DGV_BASE_URL}/datasets/${publishContent.existingDataset}`;
-                });
-            });
-        });
-    },
-    updateDatasetCreateResource(publishContent) {
-      $api
-        .put(
-          `datasets/${publishContent.existingDataset}`,
-          {
-            title: publishContent.dataset.title,
-            description: publishContent.dataset.description,
-          },
-          (err) => {
-            // eslint-disable-next-line no-alert
-            alert(`Erreur lors de la publication du jeu de données : ${err}`);
-          },
-        )
-        .then((response) => {
-          // new dataset identifier
-          const datasetId = response.data.id;
-          // Prepare resource file to upload
-          const formData = new FormData();
-          formData.append('file', this.file, 'data.csv');
-          // Resource upload
-          $api
-            .post(
-              `datasets/${datasetId}/upload`,
-              formData,
-              (err) => {
-                // eslint-disable-next-line
-                console.log(
-                  `Erreur lors du téléversement de la ressource : ${err}`,
-                );
-              },
-              { 'Content-Type': 'multipart/form-data' },
-            )
-            // eslint-disable-next-line no-shadow
-            .then((response) => {
-              // New resource identifier
-              const resourceId = response.data.id;
-              const payload = {
-                title: publishContent.resource.title,
-                schema: this.schemaName,
-              };
-              $api
-                .put(
-                  `datasets/${datasetId}/resources/${resourceId}/`,
-                  payload,
-                  (err) => {
-                    // eslint-disable-next-line no-alert
-                    alert(
-                      `Erreur lors de la mise à jour de la ressource : ${err}`,
-                    );
-                  },
-                )
-                .then(() => {
-                  this.publicationOK = true;
-                  this.linkDgv = `${DGV_BASE_URL}/datasets/${publishContent.existingDataset}`;
-                });
-            });
-        });
-    },
-    createDatasetCreateResource(publishContent) {
-      let body = {};
-      if (publishContent.organizationId === 'me') {
-        body = {
-          title: publishContent.dataset.title,
-          description: publishContent.dataset.description,
-        };
-      } else {
-        body = {
-          title: publishContent.dataset.title,
-          description: publishContent.dataset.description,
-          organization: publishContent.organizationId,
-        };
-      }
-      $api
-        .post(
-          'datasets',
-          body,
-          (err) => {
-            // eslint-disable-next-line no-alert
-            alert(`Erreur lors de la publication du jeu de données : ${err}`);
-          },
-        )
-        .then((response) => {
-          // new dataset identifier
-          const datasetId = response.data.id;
-          // Prepare resource file to upload
-          const formData = new FormData();
-          formData.append('file', this.file, 'data.csv');
-          // Resource upload
-          $api
-            .post(
-              `datasets/${datasetId}/upload`,
-              formData,
-              (err) => {
-                // eslint-disable-next-line
-                console.log(
-                  `Erreur lors du téléversement de la ressource : ${err}`,
-                );
-              },
-              { 'Content-Type': 'multipart/form-data' },
-            )
-            // eslint-disable-next-line no-shadow
-            .then((response) => {
-              // New resource identifier
-              const resourceId = response.data.id;
-              const payload = {
-                title: publishContent.resource.title,
-                schema: this.schemaName,
-              };
-              $api
-                .put(
-                  `datasets/${datasetId}/resources/${resourceId}/`,
-                  payload,
-                  (err) => {
-                    // eslint-disable-next-line no-alert
-                    alert(
-                      `Erreur lors de la mise à jour de la ressource : ${err}`,
-                    );
-                  },
-                )
-                .then(() => {
-                  this.publicationOK = true;
-                  this.linkDgv = `${DGV_BASE_URL}/datasets/${datasetId}`;
-                });
-            });
-        });
-    },
     publishDataset() {
       // Get structured publish form content
       const publishContent = this.dataToPublish;
@@ -506,37 +286,18 @@ export default {
       // Si pas de ressource id mais dataset id, on ajoute une ressource
       // Si pas de dataset id on créé un dataset avec ou sans orga avec la ressource
       if (publishContent.existingResource !== '') {
-        this.updateDatasetUpdateResource(publishContent);
+        this.updateDatasetUpdateResource(publishContent,this.file);
       } else if (publishContent.existingDataset !== '') {
-        this.updateDatasetCreateResource(publishContent);
+        this.updateDatasetCreateResource(publishContent,this.file);
       } else {
-        this.createDatasetCreateResource(publishContent);
+        this.createDatasetCreateResource(publishContent,this.file);
       }
-    },
-    btnClick() {
-      window.open(this.linkDgv);
-    },
-    showModal() {
-      this.$refs.modal1.show();
-    },
-    hideModal() {
-      this.$refs.modal1.hide();
     },
   },
   mounted() {
-    const loader = this.$loading.show();
-    fetch(`${SCHEMAS_CATALOG_URL}`).then((r) => r.json()).then((data) => {
-      this.schemas = data.schemas;
-    }).finally(() => {
-      loader.hide();
-    });
-
     fetch(`https://schema.data.gouv.fr/schemas/${this.schemaName}/latest/schema.json`).then((r) => r.json()).then((data) => {
       this.schemaObject = data;
     });
-    if (!this.user.loggedIn) {
-      this.showModal();
-    }
   },
 };
 </script>

@@ -6,34 +6,24 @@
             {{ schema.description }}
             <br />
             <br />
-            <div class="button-boxes">
-                <div style="padding-right: 30px; text-align: center;">
-                    <button
-                        @click="btnDocClick()"
-                        class="rf-btn"
-                        title="Documentation schéma"
-                    >
-                        Voir la documentation du schéma
-                    </button>
-                </div>
-                <div style="padding-right: 30px; text-align: center;">
-                    <button
-                        @click="btnFilesClick()"
-                        class="rf-btn"
-                        title="Documentation schéma"
-                    >
-                        Voir les ressources déjà publiées
-                    </button>
-                </div>
-                <div style="padding-right: 30px; text-align: center;">
-                    <button
-                        @click="btnConsolidationClick()"
-                        class="rf-btn"
-                        title="Documentation schéma"
-                    >
-                        Voir la base de consolidation
-                    </button>
-                </div>
+            <div>   
+                <ul>
+                    <li>
+                        <a href="" @click="btnDocClick()">
+                            Voir la documentation du schéma
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" @click="btnFilesClick()">
+                            Voir les ressources déjà publiées
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" @click="btnConsolidationClick()">
+                            Voir la base de consolidation
+                        </a>
+                    </li>
+                </ul>
             </div>
             <br />
             <br />
@@ -50,7 +40,7 @@
                     <br/>
                     <div class="box-content">
                         Je souhaite m'assurer de la validité des données et/ou
-                        les publier sur la plateforme datagouv
+                        les publier sur la plateforme data.gouv.fr
                     </div>
                 </div>
                 <div class="box style-saisie" @click="goto('form')">

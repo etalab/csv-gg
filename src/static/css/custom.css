@@ -33,11 +33,12 @@
 
 .style-schema{
   background-color: white;
+  min-height: 200px;
   color: #666666;
 }
 
 .style-saisie{
-  background-color:#0069CA;
+  background-color:#060191;
   color: white;
 }
 .box-schema:hover{
@@ -59,7 +60,7 @@
   width: 100%;
   text-align: left;
   padding-top: 10px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: normal;
 }
 
@@ -93,6 +94,7 @@
   font-weight: bold;
 }
 
+
 .rf-btn-light{
   background-color: #88c4f2;
   color: white;
@@ -101,4 +103,9 @@
   padding-bottom: 8px;
   padding-left: 24px;
   padding-right: 24px;
+}
+
+
+.vsa-item__trigger:hover{
+  background-color: #ebebeb;
 }

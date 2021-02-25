@@ -78,6 +78,7 @@
             :organizations="userOrganizations"
             :publicationIntro="publicationIntro"
             v-on:form-state-change="togglePublishButtonState"
+
         />
         <div v-if="!publishButtonDisabled">
             <button
@@ -113,7 +114,7 @@
       ref="modal1"
       id="modal1"
       hide-footer
-      title="Attention, vous n'êtes pas connectés"
+      title="Attention, vous n'êtes pas connecté"
     >
       <div>
         <p>Pour publier vos données sur datagouv, il est nécessaire de vous connecter.</p>
@@ -146,30 +147,21 @@ import StringField from '../components/StringField.vue';
 import SelectField from '../components/SelectField.vue';
 import RadioField from '../components/RadioField.vue';
 
-import { EventBus } from '../event-bus.js';
 import PublishFormUpload from '../components/PublishFormUpload.vue';
-import $api from '../services/Api';
 
 import NavUser from '../components/NavUser.vue';
 import VueEditableGrid from '../grid/VueEditableGrid.vue';
 
+import PublishRessources from '../mixins/PublishResources.vue';
+
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL;
-const SCHEMAS_CATALOG_URL = process.env.VUE_APP_SCHEMAS_CATALOG_URL;
-const DGV_BASE_URL = process.env.VUE_APP_DATAGOUV_API_URL;
 
 export const defaultDateFormat = 'MMM dd, yyyy';
 export const defaultDateTimeFormat = 'yyyy-M-dd';
 
-/*
-const numericFormatter = event => {
-  if (event.reverse) {
-    return event.value && +event.value.replace(' years')
-  }
-  return `${event.value} years`
-} */
-
 export default {
   name: 'schemaTable',
+  mixins: [PublishRessources],
   components: {
     VueEditableGrid,
     PublishFormUpload,
@@ -178,20 +170,11 @@ export default {
   },
   data() {
     return {
-      schemaName: this.$route.query.schema,
-      schemas: null,
-      options: [],
       selectedRow: null,
-      schemaMeta: {},
-      schema: {},
       errors: {},
-      values: {},
-      fieldNames: [],
       faultyFields: [],
       lines: [],
       formValidated: false,
-      addingLine: true,
-      hasValues: false,
       fieldNodes: [],
       columnDefs: [
         {
@@ -227,93 +210,13 @@ export default {
     },
   },
   mounted() {
-    const loader = this.$loading.show();
-    fetch(`${SCHEMAS_CATALOG_URL}`).then((r) => r.json()).then((data) => {
-      this.schemas = data.schemas;
-      this.options = this.schemas.map((s) => ({
-        value: s.name,
-        text: s.title || s.name,
-      }));
-      this.schema = this.schemas.find((s) => s.name === this.schemaName);
-      this.schemaMeta = this.schema;
-    }).finally(() => {
-      loader.hide();
-    });
-
     this.buildForm();
-    EventBus.$on('field-value-changed', (field, value) => {
-      this.values[field] = value;
-      this.computeHasValues();
-    });
     this.rows.push(this.emptyRow);
     this.rowsInfo.push({ ...this.emptyRowInfo });
     this.rowsError.push({ ...this.emptyRowError });
     this.rowsColor.push({ ...this.emptyRowColor });
-
-    if (!this.user.loggedIn) {
-      this.showModal();
-    }
   },
   computed: {
-    filename() {
-      const date = new Date();
-      const name = [
-        this.schemaName,
-        date.toISOString(),
-      ].join('_');
-      return `${name}.csv`;
-    },
-    fields() {
-      return [...this.fieldNames.map((f) => ({
-        key: f,
-        label: f,
-      })),
-      { key: 'actions', label: '' }];
-    },
-    csvLink() {
-      const csv = this.buildFullCsvContent();
-      // Forcing UTF-8 encoding. See https://stackoverflow.com/questions/17879198
-      const data = new Blob([`\uFEFF${csv}`], { type: 'text/csv' });
-      return window.URL.createObjectURL(data);
-    },
-    items() {
-      return this.lines.map((line) => {
-        const obj = {};
-        this.fieldNames.forEach((field, idx) => {
-          obj[field] = line[idx];
-        });
-        return obj;
-      });
-    },
-    user() {
-      return this.$store.state.auth.user;
-    },
-    userLoggedIn() {
-      return this.user && this.user.loggedIn;
-    },
-    userLoggedInWithSomeOrganizations() {
-      return this.userLoggedIn && this.user.data.organizations.length > 0;
-    },
-    publishButtonTitle() {
-      if (!this.userLoggedIn) {
-        return 'Connectez-vous pour publier une ressource';
-      }
-      if (this.user.data.organizations.length === 0) {
-        return 'Inscrivez-vous à une organisation pour publier une ressource';
-      }
-      return 'Publier le jeu de données';
-    },
-    userOrganizations() {
-      return this.userLoggedIn
-        ? this.user.data.organizations
-          .slice(0)
-          .sort((a, b) => a.name > b.name)
-          .map((org) => ({
-            value: org.id,
-            text: org.name,
-          }))
-        : [];
-    },
   },
   methods: {
     maybeAddRow($event){
@@ -377,16 +280,6 @@ export default {
         loader.hide();
       });
     },
-    // in a method because of {} binding not allowed
-    computeHasValues() {
-      this.hasValues = Object.keys(this.values).length > 0 && Object.values(this.values).some((v) => v !== '');
-    },
-    buildHeaderLine() {
-      return this.fieldNames.map((v) => `"${v}"`).join(',');
-    },
-    getCurrentLine() {
-      return this.fieldNames.map((f) => this.values[f] || '');
-    },
     buildLine(line) {
       let linecsv = '';
       let cpt = 0;
@@ -409,27 +302,16 @@ export default {
       });
       return finalcsv;
     },
-    buildFullCsvContent() {
-      const lines = this.lines.map((l) => this.buildLine(l));
-      return [this.buildHeaderLine(), ...lines].join('\r\n');
-    },
     csvLinkData() {
       const blob = new Blob([`\uFEFF${this.buildCurrentCsvContent()}`], { type: 'text/csv' });
       const a = document.createElement('a');
       const url = window.URL.createObjectURL(blob);
       a.href = url;
-      a.download = 'data.csv';
+      a.download = this.filename;
       a.click();
     },
     getCSVBlob() {
       return new Blob([`\uFEFF${this.buildCurrentCsvContent()}`], { type: 'text/csv' });
-    },
-    buildFormData() {
-      const formData = new FormData();
-      const blob = new Blob([`\uFEFF${this.buildCurrentCsvContent()}`], { type: 'text/csv' });
-      formData.append('file', blob, 'data.csv');
-      formData.append('schema', this.schemaMeta.schema_url);
-      return formData;
     },
     addField(field) {
       const hasEnum = field.constraints && field.constraints.enum;
@@ -451,26 +333,6 @@ export default {
         return factory(RadioField, field);
       }
       return factory(StringField, field);
-    },
-    dispatchError(error) {
-      const index = error.fieldNumber
-        ? error.fieldNumber // new validation report
-        : error['column-number']; // legacy validation report
-      this.faultyFields.push(this.fieldNames[index - 1]);
-      EventBus.$emit('field-error', this.fieldNames[index - 1], error);
-    },
-    dispatchNoError() {
-      this.fieldNames.forEach((field) => {
-        if (this.faultyFields.indexOf(field) === -1) {
-          EventBus.$emit('field-no-error', field);
-        }
-      });
-    },
-    dispatchFormValidated() {
-      EventBus.$emit('form-validated');
-    },
-    dispatchReset() {
-      EventBus.$emit('form-reset');
     },
     submit() {
       const loader = this.$loading.show();
@@ -499,7 +361,6 @@ export default {
       })
         .then((r) => r.json())
         .then((data) => {
-          this.formValidated = true;
           this.faultyFields = [];
           const errors = data.report.tasks
             ? data.report.tasks[0].errors // new validation report
@@ -523,22 +384,9 @@ export default {
             this.publicationButtons = true;
             this.lines.push(this.getCurrentLine());
           }
-          this.dispatchNoError();
-          this.dispatchFormValidated();
         }).finally(() => {
           loader.hide();
         });
-    },
-    addLine() {
-      this.addingLine = true;
-      this.formValidated = false;
-      this.dispatchReset();
-    },
-    deleteLine(idx) {
-      this.lines.splice(idx, 1);
-      if (this.lines.length === 0) {
-        this.addLine();
-      }
     },
     formatRow(row) {
       const red = '#ffe5e5';
@@ -722,224 +570,29 @@ export default {
       const description = (this.field.description || '').toLowerCase();
       return name.includes(keyword) || new RegExp(`\\b${keyword}\\b`).test(description);
     },
-    updateDatasetUpdateResource(publishContent) {
-      $api
-        .put(
-          `datasets/${publishContent.existingDataset}`,
-          {
-            title: publishContent.dataset.title,
-            description: publishContent.dataset.description,
-          },
-          (err) => {
-            // eslint-disable-next-line no-alert
-            alert(`Erreur lors de la publication du jeu de données : ${err}`);
-          },
-        )
-        .then((response) => {
-          // new dataset identifier
-          const datasetId = response.data.id;
-          // Prepare resource file to upload
-          const formData = new FormData();
-          formData.append('file', this.getCSVBlob(), 'data.csv');
-          // Resource upload
-          $api
-            .post(
-              `datasets/${datasetId}/resources/${publishContent.existingResource}/upload`,
-              formData,
-              (err) => {
-                // eslint-disable-next-line
-                console.log(
-                  `Erreur lors du téléversement de la ressource : ${err}`,
-                );
-              },
-              { 'Content-Type': 'multipart/form-data' },
-            )
-            // eslint-disable-next-line no-shadow
-            .then((response) => {
-              // New resource identifier
-              const resourceId = response.data.id;
-              const payload = {
-                title: publishContent.resource.title,
-                schema: this.schemaName,
-              };
-              $api
-                .put(
-                  `datasets/${datasetId}/resources/${resourceId}/`,
-                  payload,
-                  (err) => {
-                    // eslint-disable-next-line no-alert
-                    alert(
-                      `Erreur lors de la mise à jour de la ressource : ${err}`,
-                    );
-                  },
-                )
-                .then(() => {
-                  this.publicationOK = true;
-                  this.linkDgv = `${DGV_BASE_URL}/datasets/${publishContent.existingDataset}`;
-                });
-            });
-        });
-    },
-    updateDatasetCreateResource(publishContent) {
-      $api
-        .put(
-          `datasets/${publishContent.existingDataset}`,
-          {
-            title: publishContent.dataset.title,
-            description: publishContent.dataset.description,
-          },
-          (err) => {
-            // eslint-disable-next-line no-alert
-            alert(`Erreur lors de la publication du jeu de données : ${err}`);
-          },
-        )
-        .then((response) => {
-          // new dataset identifier
-          const datasetId = response.data.id;
-          // Prepare resource file to upload
-          const formData = new FormData();
-          formData.append('file', this.getCSVBlob(), 'data.csv');
-          // Resource upload
-          $api
-            .post(
-              `datasets/${datasetId}/upload`,
-              formData,
-              (err) => {
-                // eslint-disable-next-line
-                console.log(
-                  `Erreur lors du téléversement de la ressource : ${err}`,
-                );
-              },
-              { 'Content-Type': 'multipart/form-data' },
-            )
-            // eslint-disable-next-line no-shadow
-            .then((response) => {
-              // New resource identifier
-              const resourceId = response.data.id;
-              const payload = {
-                title: publishContent.resource.title,
-                schema: this.schemaName,
-              };
-              $api
-                .put(
-                  `datasets/${datasetId}/resources/${resourceId}/`,
-                  payload,
-                  (err) => {
-                    // eslint-disable-next-line no-alert
-                    alert(
-                      `Erreur lors de la mise à jour de la ressource : ${err}`,
-                    );
-                  },
-                )
-                .then(() => {
-                  this.publicationOK = true;
-                  this.linkDgv = `${DGV_BASE_URL}/datasets/${publishContent.existingDataset}`;
-                });
-            });
-        });
-    },
-    createDatasetCreateResource(publishContent) {
-      let body = {};
-      if (publishContent.organizationId === 'me') {
-        body = {
-          title: publishContent.dataset.title,
-          description: publishContent.dataset.description,
-        };
-      } else {
-        body = {
-          title: publishContent.dataset.title,
-          description: publishContent.dataset.description,
-          organization: publishContent.organizationId,
-        };
-      }
-      $api
-        .post(
-          'datasets',
-          body,
-          (err) => {
-            // eslint-disable-next-line no-alert
-            alert(`Erreur lors de la publication du jeu de données : ${err}`);
-          },
-        )
-        .then((response) => {
-          // new dataset identifier
-          const datasetId = response.data.id;
-          // Prepare resource file to upload
-          const formData = new FormData();
-          formData.append('file', this.getCSVBlob(), 'data.csv');
-          // Resource upload
-          $api
-            .post(
-              `datasets/${datasetId}/upload`,
-              formData,
-              (err) => {
-                // eslint-disable-next-line
-                console.log(
-                  `Erreur lors du téléversement de la ressource : ${err}`,
-                );
-              },
-              { 'Content-Type': 'multipart/form-data' },
-            )
-            // eslint-disable-next-line no-shadow
-            .then((response) => {
-              // New resource identifier
-              const resourceId = response.data.id;
-              const payload = {
-                title: publishContent.resource.title,
-                schema: this.schemaName,
-              };
-              $api
-                .put(
-                  `datasets/${datasetId}/resources/${resourceId}/`,
-                  payload,
-                  (err) => {
-                    // eslint-disable-next-line no-alert
-                    alert(
-                      `Erreur lors de la mise à jour de la ressource : ${err}`,
-                    );
-                  },
-                )
-                .then(() => {
-                  this.publicationOK = true;
-                  this.linkDgv = `${DGV_BASE_URL}/datasets/${datasetId}`;
-                });
-            });
-        });
-    },
     publishDataset() {
       // Get structured publish form content
       const publishContent = this.dataToPublish;
       // Si resource id : on modifie resource
       // Si pas de ressource id mais dataset id, on ajoute une ressource
       // Si pas de dataset id on créé un dataset avec ou sans orga avec la ressource
+
       if (publishContent.existingResource !== '') {
         // Mise à jour dataset
         // Ecrasement resource
         // Modification metadonnées
-        this.updateDatasetUpdateResource(publishContent);
+        this.updateDatasetUpdateResource(publishContent, this.getCSVBlob());
       } else if (publishContent.existingDataset !== '') {
         // Mise à jour dataset
         // création nouvelle ressource
         // modiciation métaonnées
-        this.updateDatasetCreateResource(publishContent);
+        this.updateDatasetCreateResource(publishContent, this.getCSVBlob());
       } else {
         // Création dataset
         // création ressource
         // modification métadonnées
-        this.createDatasetCreateResource(publishContent);
+        this.createDatasetCreateResource(publishContent, this.getCSVBlob());
       }
-    },
-    showPublishForm() {
-      this.publicationReady = true;
-    },
-    btnClick() {
-      window.open(this.linkDgv);
-    },
-    showModal() {
-      this.$refs.modal1.show();
-    },
-    hideModal() {
-      this.$refs.modal1.hide();
     },
   },
 };

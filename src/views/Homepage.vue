@@ -6,7 +6,7 @@
                 <div class="homepage-box">
                    <br />
                    <p class="color: blue; text-align: left; border: 1px solid black;">
-                       L'aide à la saisie de
+                       Saisissez, validez et publiez 
                        <br/>
                        vos données structurées
                     </p>
@@ -17,7 +17,8 @@
             </div>
             <br/><br />
             <p>
-                Cet outil vous permet de saisir, valider et publier des données obéissant à un schéma de données sur la plateforme <a href="http://www.data.gouv.fr/">datagouv</a>.</p><p>Les schémas proposés sont référencés sur la plateforme <a href="http://schema.data.gouv.fr">schema.data.gouv.fr</a>.
+                Cet outil vous permet de saisir, valider et publier des données obéissant à un schéma de données sur la plateforme ouverte des données publiques françaises  <a href="http://www.data.gouv.fr/">data.gouv.fr</a>.</p>
+                <p>Les schémas proposés sont référencés sur la plateforme <a href="http://schema.data.gouv.fr">schema.data.gouv.fr</a>.
             </p>
             <br />
             <vsa-list>
@@ -30,8 +31,8 @@
                         <p>
                             Les schémas de données permettent de décrire la structure
                             d'un jeu de données. Ils indiquent clairement quels sont les
-                            différents champs, comment sont représentées les données, quelles
-                            sont les valeurs possibles etc.
+                            différents champs (colonnes), comment sont représentées les données, 
+                            quelles sont les valeurs possibles etc.
                         </p>
                         <i>Synonymes : modèle de données, modèle logique de données, schéma.</i>
                     </vsa-content>
@@ -43,18 +44,16 @@
                     <vsa-content>
                         <p>
                             Un guide a été publié en 2020 pour accompagner les futurs
-                            producteurs de schéma de données.
+                            producteurs de schéma de données. N'hésitez pas à le lire et
+                            nous faire part de vos retours :
                         </p>
-                        <p>N'hésitez pas à le lire et nous faire part de vos retours.</p>
-                        <div style="text-align: center;">
-                            <button
-                                @click="btnGuideClick()"
-                                class="rf-btn"
-                                title="Guide schéma"
-                            >
-                                Lire le guide
-                            </button>
-                        </div>
+                        <ul>
+                            <li>
+                                <a href="" @click="btnGuideClick()">
+                                   Lire le guide
+                                </a>
+                            </li>
+                        </ul>
                     </vsa-content>
                 </vsa-item>
                 <vsa-item>
@@ -89,12 +88,15 @@
             </div>
             <div class="rf-grid-row rf-grid-row--center rf-grid-row--gutter">
                 <div class="rf-col-xs-12 rf-col-md-3 rf-p-3w">
-                <div class="rf-text--lg rf-pb-2w">
-                    <img src="../static/images/writing.png" width="30" height="30"/>
-                    <br/>
-                    Saisir
+                    <div class="rf-text--lg rf-pb-2w">
+                        <img src="../static/images/writing.png" width="30" height="30"/>
+                        <br/>
+                        Saisir
+                    </div>
+                    <div class="rf-text--sm">Saisir ou charger vos données structurées</div>
                 </div>
-                <div class="rf-text--sm">Saisir ou charger vos données structurées</div>
+                <div style="display: flex; align-items: center;">
+                    <img src="../static/images/right-arrow.png" width="30" height="30"/>
                 </div>
                 <div class="rf-col-xs-12 rf-col-md-3 rf-p-3w">
                 <div class="rf-text--lg rf-pb-2w">
@@ -104,13 +106,16 @@
                 </div>
                 <div class="rf-text--sm">Vérifier la conformité de vos données</div>
                 </div>
+                <div style="display: flex; align-items: center;">
+                    <img src="../static/images/right-arrow.png" width="30" height="30"/>
+                </div>
                 <div class="rf-col-xs-12 rf-col-md-3 rf-p-3w">
                 <div class="rf-text--lg rf-pb-2w">
                     <img src="../static/images/broadcast.png" width="30" height="30"/>
                     <br/>
                     Publier
                 </div>
-                <div class="rf-text--sm">Publier vos données sur la plateforme datagouv</div>
+                <div class="rf-text--sm">Publier vos données sur la plateforme data.gouv.fr</div>
                 </div>
             </div>
         </div>
@@ -153,13 +158,13 @@
                         :key="schema.name"
                         @click="goto(schema)"
                     >
-                        <div class="box-header">
+                        <div style="color: black;" class="box-header">
                             {{ schema.title }}
                         </div>
                         <div class="box-logo">
-                            <img src="../static/images/diagram_grey.png" width="30" height="30"/>
+                            <img src="../static/images/diagram_black.png" width="30" height="30"/>
                         </div>
-                        <div class="box-content">{{ schema.description }}</div>
+                        <div style="color: black;" class="box-content">{{ truncateText(schema.description) }}</div>
                     </div>
                 </div>
             </div>
@@ -212,6 +217,12 @@ export default {
   watch: {
   },
   methods: {
+    truncateText(desc){
+        if (desc.length > 200) {
+            return desc.slice(0,200)+' [...]';
+        } 
+        return desc;
+    },
     goto(schema) {
       this.$router.push(`select?schema=${schema.name}`);
     },
