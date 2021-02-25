@@ -171,7 +171,7 @@ const lkValide = require('../static/images/badge-valide.svg');
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL;
 
 export default {
-  name: 'uploaddata',
+  name: 'fillDataUpload',
   mixins: [PublishRessources],
   components: {
     VsaList,

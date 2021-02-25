@@ -1,10 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import SchemaForm from './views/SchemaForm.vue';
+import FillDataForm from './views/FillDataForm.vue';
 import Homepage from './views/Homepage.vue';
-import SchemaTable from './views/SchemaTable.vue';
+import FillDataTable from './views/FillDataTable.vue';
 import SelectFillingMode from './views/SelectFillingMode.vue';
-import UploadData from './views/UploadData.vue';
+import FillDataUpload from './views/FillDataUpload.vue';
 import Login from './views/Login.vue';
 
 Vue.use(Router);
@@ -14,24 +14,9 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/form',
-      name: 'home_schema',
-      component: SchemaForm,
-    },
-    {
       path: '/',
       name: 'home',
       component: Homepage,
-    },
-    {
-      path: '/select',
-      name: 'select',
-      component: SelectFillingMode,
-    },
-    {
-      path: '/upload',
-      name: 'upload',
-      component: UploadData,
     },
     {
       path: '/login',
@@ -39,9 +24,24 @@ export default new Router({
       component: Login,
     },
     {
+      path: '/select',
+      name: 'select',
+      component: SelectFillingMode,
+    },
+    {
+      path: '/form',
+      name: 'home_schema',
+      component: FillDataForm,
+    },
+    {
       path: '/table',
       name: 'table',
-      component: SchemaTable,
+      component: FillDataTable,
+    },
+    {
+      path: '/upload',
+      name: 'upload',
+      component: FillDataUpload,
     },
   ],
 });

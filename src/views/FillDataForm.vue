@@ -195,7 +195,7 @@ const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL;
 
 
 export default {
-  name: 'schemaForm',
+  name: 'fillDataForm',
   mixins: [PublishRessources],
   components: {
     PublishFormUpload,

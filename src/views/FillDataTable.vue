@@ -160,7 +160,7 @@ export const defaultDateFormat = 'MMM dd, yyyy';
 export const defaultDateTimeFormat = 'yyyy-M-dd';
 
 export default {
-  name: 'schemaTable',
+  name: 'fillDataTable',
   mixins: [PublishRessources],
   components: {
     VueEditableGrid,
