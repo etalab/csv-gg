@@ -17,7 +17,7 @@ div.vue-editable-grid
     .grid-tools-right
       slot(name='header-r')
   .grid-table-container(ref='container')
-    table.grid-table(ref='table' :class='{ filters: enableFilters }')
+    table.grid-table(ref='table' )
       thead(ref='head')
         tr.headers-row(:style='{ "grid-template-columns": gridTemplateColumns }')
           th(
@@ -28,13 +28,6 @@ div.vue-editable-grid
           )
             span.header-content {{ column.headerName }}
             span.resize-handle(@mousedown='initResize(column, $event)' @click.stop)
-        tr.filters-row(:style='{ "grid-template-columns": gridTemplateColumns }' v-if='enableFilters')
-          th(
-            v-for='(column, index) in columnDefs'
-            :key='index'
-            :class='{ filter: column.filter }'
-          )
-            input(type='text' v-model='filter[column.field]' v-if='column.filter' placeholder='Rechercher' @input='filtersChanged')
       tbody(ref='body')
         div(:style=' { "min-height": `${rowDataPage.length * itemHeight}px` }')
           tr.gridrow(v-for='(row, rowIndex) in visibleRows' :key='row[rowDataKey]' :style='{ "grid-template-columns": gridTemplateColumns, transform: `translateY(${(itemHeight * rowIndex) + ((itemHeight * offsetRows))}px)`, height: `${itemHeight}px` }')

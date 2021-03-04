@@ -12,7 +12,7 @@
             <li>
               Remplissez le formulaire à l'aide des descriptions des différents champs et des
               valeurs d'exemples. Les champs indiqués par un astérisque rouge doivent
-              obligatoirement être renseignés au moment de la saisie=,
+              obligatoirement être renseignés au moment de la saisie,
             </li>
             <li>
               L'outil vous prévient d'éventuelles erreurs de validation, le cas échéant vous

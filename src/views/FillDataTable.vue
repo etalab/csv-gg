@@ -157,7 +157,7 @@ import PublishRessources from '../mixins/PublishResources.vue';
 const VALIDATA_API_URL = process.env.VUE_APP_VALIDATA_API_URL;
 
 export const defaultDateFormat = 'MMM dd, yyyy';
-export const defaultDateTimeFormat = 'yyyy-M-dd';
+export const defaultDateTimeFormat = 'YYYY-mm-dd';
 
 export default {
   name: 'fillDataTable',

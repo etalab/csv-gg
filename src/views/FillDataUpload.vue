@@ -60,6 +60,16 @@
                         </ul>
                     </vsa-content>
                 </vsa-item>
+                <vsa-item v-if="reportJson.length != 0">
+                    <vsa-heading>
+                        Erreurs ({{ reportJson.length }})
+                    </vsa-heading>
+                    <vsa-content>
+                        <ul v-bind:key="error" v-for="error in this.reportJson">
+                            <li><b>{{ error }}</b></li>
+                        </ul>
+                    </vsa-content>
+                </vsa-item>
                 </vsa-list>
             </div>
             <br/><br/>
@@ -193,45 +203,43 @@ export default {
       reportContentErrors: [],
       reportRecos: [],
       reportErrorInfo: null,
+      reportJson: [],
       publication: false,
       publicationMessage: null,
       publicationReady: false,
       dataToPublish: {},
       publicationOK: false,
       linkDgv: '',
+      contentFile: '',
+      ext: '',
     };
   },
   computed: {
-    schema() {
-      if (!this.schemaName) return;
-      if (!this.schemas) return;
-      // eslint-disable-next-line consistent-return
-      return this.schemas.find((s) => s.name === this.schemaName);
-    },
   },
   watch: {
   },
   methods: {
     handleFileUpload() {
-      // eslint-disable-next-line prefer-destructuring
-      this.file = this.$refs.file.files[0];
-      this.report = null;
-      this.reportValidStatus = null;
-      this.reportStructureErrors = [];
-      this.reportContentErrors = [];
-      this.reportRecos = [];
-      this.badgeUrl = null;
-      this.reportErrorInfo = null;
-      this.publication = false;
-      this.publicationMessage = null;
-      const formData = new FormData();
-      formData.append('file', this.file);
-      formData.append('schema', `https://schema.data.gouv.fr/schemas/${this.schemaName}/latest/schema.json`);
+      if (this.schema.schema_type == 'tableschema') {
+        // eslint-disable-next-line prefer-destructuring
+        this.file = this.$refs.file.files[0];
+        this.report = null;
+        this.reportValidStatus = null;
+        this.reportStructureErrors = [];
+        this.reportContentErrors = [];
+        this.reportRecos = [];
+        this.badgeUrl = null;
+        this.reportErrorInfo = null;
+        this.publication = false;
+        this.publicationMessage = null;
+        const formData = new FormData();
+        formData.append('file', this.file);
+        formData.append('schema', `https://schema.data.gouv.fr/schemas/${this.schemaName}/latest/schema.json`);
 
-      fetch(`${VALIDATA_API_URL}/validate`, {
-        method: 'POST',
-        body: formData,
-      })
+        fetch(`${VALIDATA_API_URL}/validate`, {
+          method: 'POST',
+          body: formData,
+        })
         .then((r) => r.json())
         .then((data) => {
           this.report = data;
@@ -263,17 +271,61 @@ export default {
               this.reportRecos = data.report.tables[0].structure_warnings;
               this.publication = true;
               this.publicationMessage = 'Malgré les recommandations, publier sur datagouv';
+              this.ext = "csv"
             } else {
               this.reportValidStatus = 'Félicitations, votre fichier est conforme au schéma !';
               this.badgeUrl = lkValide;
               this.publication = true;
               this.publicationMessage = 'Publier sur datagouv';
+              this.ext = "csv"
             }
           }
         }).finally(() => {
           // eslint-disable-next-line no-console
           console.log('finally');
         });
+      } else if (this.schema.schema_type == 'jsonschema') {
+
+        this.file = this.$refs.file.files[0];
+        this.report = null;
+        this.reportJson = []
+        this.reportValidStatus = null;
+        this.badgeUrl = null;
+        this.publication = false;
+        this.publicationMessage = null;
+
+        var reader = new FileReader();
+        reader.onloadend = () => {
+          this.contentFile = reader.result;
+
+          let bod = JSON.stringify({schema: this.schema.schema_url, json: JSON.parse(this.contentFile)});
+
+          fetch(('https://jsonschema.app.etalab.studio/validate'), {
+            method: 'POST',
+            body: bod,
+          })
+          .then((r) => r.json())
+          .then((data) => {
+            console.log(data);
+            this.report = data;
+            this.reportJson = data.errors
+            if(data.errors.length > 0) {
+              this.reportValidStatus = 'Malheureusement, le fichier soumis est invalide.';
+              this.badgeUrl = lkInvalide;
+            } else {
+              this.reportValidStatus = 'Félicitations, votre fichier est conforme au schéma !';
+              this.badgeUrl = lkValide;
+              this.publication = true;
+              this.publicationMessage = 'Publier sur datagouv';
+              this.ext = "json"
+            }
+        
+
+          });
+        }
+        reader.readAsText(this.$refs.file.files[0]);
+        
+      }
     },
     publicationForm() {
       this.publicationReady = true;
@@ -286,11 +338,11 @@ export default {
       // Si pas de ressource id mais dataset id, on ajoute une ressource
       // Si pas de dataset id on créé un dataset avec ou sans orga avec la ressource
       if (publishContent.existingResource !== '') {
-        this.updateDatasetUpdateResource(publishContent,this.file);
+        this.updateDatasetUpdateResource(publishContent,this.file,this.ext);
       } else if (publishContent.existingDataset !== '') {
-        this.updateDatasetCreateResource(publishContent,this.file);
+        this.updateDatasetCreateResource(publishContent,this.file,this.ext);
       } else {
-        this.createDatasetCreateResource(publishContent,this.file);
+        this.createDatasetCreateResource(publishContent,this.file,this.ext);
       }
     },
   },

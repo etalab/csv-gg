@@ -27,10 +27,10 @@
             </div>
             <br />
             <br />
-            <h3>Comment souhaitez-vous saisir vos données ?</h3>
+            <h3 v-if="schema && (schema.schema_type == 'tableschema' || schema.schema_type == 'jsonschema')">Comment souhaitez-vous saisir vos données ?</h3>
             <br />
             <div class="boxes">
-                <div class="box style-saisie" @click="goto('upload')">
+                <div v-if="schema && (schema.schema_type == 'tableschema' || schema.schema_type == 'jsonschema')" class="box style-saisie" @click="goto('upload')">
                     <div class="box-header">
                         Mes données sont déjà structurées
                     </div>
@@ -43,7 +43,7 @@
                         les publier sur la plateforme data.gouv.fr
                     </div>
                 </div>
-                <div class="box style-saisie" @click="goto('form')">
+                <div v-if="schema && schema.schema_type == 'tableschema'" class="box style-saisie" @click="goto('form')">
                     <div class="box-header">
                         Je souhaite saisir mes données dans un formulaire
                     </div>
@@ -55,7 +55,7 @@
                         que je puisse saisir mes données.
                     </div>
                 </div>
-                <div class="box style-saisie" @click="goto('table')">
+                <div v-if="schema && schema.schema_type == 'tableschema'" class="box style-saisie" @click="goto('table')">
                     <div class="box-header">
                         Je souhaite saisir mes données sur un tableur
                     </div>
@@ -68,6 +68,7 @@
                     </div>
                 </div>
             </div>
+            <p  v-if="schema && schema.schema_type == 'other'">Ce schéma obéit à un standard indépendant, notre outil ne propose pas la saisie de ces données</p>
         </div>
     </div>
 </template>

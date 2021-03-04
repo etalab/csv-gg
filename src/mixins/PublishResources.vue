@@ -124,7 +124,7 @@ export default {
     togglePublishButtonState(formState) {
       this.publishButtonDisabled = !formState;
     },
-    updateDatasetUpdateResource(publishContent, dataBlob) {
+    updateDatasetUpdateResource(publishContent, dataBlob, ext="csv") {
       $api
         .put(
           `datasets/${publishContent.existingDataset}`,
@@ -142,7 +142,7 @@ export default {
           const datasetId = response.data.id;
           // Prepare resource file to upload
           const formData = new FormData();
-          formData.append('file', dataBlob, 'data.csv');
+          formData.append('file', dataBlob, 'data.'+ext);
           // Resource upload
           $api
             .post(
@@ -182,7 +182,7 @@ export default {
             });
         });
     },
-    updateDatasetCreateResource(publishContent, dataBlob) {
+    updateDatasetCreateResource(publishContent, dataBlob, ext="csv") {
       $api
         .put(
           `datasets/${publishContent.existingDataset}`,
@@ -200,7 +200,7 @@ export default {
           const datasetId = response.data.id;
           // Prepare resource file to upload
           const formData = new FormData();
-          formData.append('file', dataBlob, 'data.csv');
+          formData.append('file', dataBlob, 'data.'+ext);
           // Resource upload
           $api
             .post(
@@ -240,7 +240,7 @@ export default {
             });
         });
     },
-    createDatasetCreateResource(publishContent, dataBlob) {
+    createDatasetCreateResource(publishContent, dataBlob, ext="csv") {
       let body = {};
       if (publishContent.organizationId === 'me') {
         body = {
@@ -268,7 +268,7 @@ export default {
           const datasetId = response.data.id;
           // Prepare resource file to upload
           const formData = new FormData();
-          formData.append('file', dataBlob, 'data.csv');
+          formData.append('file', dataBlob, 'data.'+ext);
           // Resource upload
           $api
             .post(
