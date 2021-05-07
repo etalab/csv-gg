@@ -1,3 +1,6 @@
+> This tool has been integrated to https://github.com/etalab/publier.etalab.studio and is not supported anymore.
+
+
 ![](./public/assets/csvgg.gif)
 
 This app dynamically generates a form based on a [TableSchema](https://frictionlessdata.io/specs/table-schema/) specification for a CSV file. It then uses a [Validata](https://git.opendatafrance.net/validata/) API to validate each row. The resulting CSV can be downloaded afterwards.
