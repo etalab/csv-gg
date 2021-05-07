@@ -1,5 +1,5 @@
-> This tool has been integrated to https://github.com/etalab/publier.etalab.studio and is not supported anymore.
 
+⚠️ **This tool has been integrated to https://github.com/etalab/publier.etalab.studio and is not supported anymore.**
 
 ![](./public/assets/csvgg.gif)
 
